@@ -14,6 +14,13 @@
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css"
     />
+    <script>
+      const url = sessionStorage.getItem('REDIRECT_URL')
+      sessionStorage.removeItem('REDIRECT_URL')
+      if (url !== null && url !== location.href) {
+        history.replaceState(null, null, url)
+      }
+    </script>
   </head>
   <body>
     <noscript>
