@@ -23,6 +23,7 @@
         "htmlWhitespaceSensitivity": "ignore",
         "trailingComma": "all"
       }
-    ]
+    ],
+    "@typescript-eslint/ban-types": "off"
   }
 }
