@@ -33,11 +33,8 @@ export default defineComponent({
     })
 
     const clickDone = async () => {
-      await RouterHelper.moveHome(
-        state.apiKey,
-        LocalStorage.settings.myPeerId,
-        LocalStorage.settings.theirPeerId,
-      )
+      LocalStorage.apiKey = state.apiKey
+      await RouterHelper.moveHome(null, null)
     }
     return {
       ...toRefs(state),

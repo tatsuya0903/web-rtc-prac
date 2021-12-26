@@ -11,17 +11,12 @@ export class RouteLocations {
       name: RouteNames.Login,
     }
   }
-  static toHome(
-    apiKey: string | null,
-    myPeerId: string | null,
-    theirPeerId: string | null,
-  ): Location {
+  static toHome(apiKey: string | null, theirPeerId: string | null): Location {
     return {
       name: RouteNames.Home,
       query: {
-        apiKey: apiKey,
-        myPeerId: myPeerId,
-        theirPeerId: theirPeerId,
+        apiKey: apiKey ?? undefined,
+        theirPeerId: theirPeerId ?? undefined,
       },
     }
   }

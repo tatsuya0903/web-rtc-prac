@@ -1,6 +1,17 @@
 <template>
   <div class="debug-sky-way">
     <v-row>
+      <v-col
+        v-if="shareUrl !== null"
+        cols="12"
+        class="debug-sky-way__item"
+        style="display: flex; flex-direction: row"
+      >
+        <div style="font-size: 10px">{{ shareUrl }}</div>
+        <v-btn icon @click="clickShare(shareUrl)">
+          <v-icon>mdi-share-variant</v-icon>
+        </v-btn>
+      </v-col>
       <v-col cols="12" md="6" class="debug-sky-way__item">
         <InputText label="自分のPeerID" :value="myPeerId" readonly />
         <video ref="myVideo" width="100%" autoplay muted playsinline />
@@ -17,10 +28,19 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref, onMounted, watch } from '@vue/composition-api'
+import {
+  defineComponent,
+  reactive,
+  toRefs,
+  ref,
+  onMounted,
+  watch,
+  computed,
+} from '@vue/composition-api'
 import Peer, { MediaConnection, PeerConstructorOption } from 'skyway-js'
 import { LocalStorage } from '@/localStorage'
 import InputText from '@/components/InputText.vue'
+import { Common } from '@/common'
 
 type State = {
   myPeerId: string
@@ -103,6 +123,15 @@ export default defineComponent({
       }
     }
 
+    const shareUrl = computed(() => {
+      const apiKey = props.apiKey
+      const theirPeerId = state.myPeerId
+      if (theirPeerId.length === 0) {
+        return null
+      }
+      return Common.createShareUrl(apiKey, theirPeerId)
+    })
+
     onMounted(() => {
       console.log(`onMounted >> `)
       const element = myVideo.value
@@ -137,11 +166,21 @@ export default defineComponent({
       setEventListener(mediaConnection)
     }
 
+    const clickShare = async (url: string) => {
+      await navigator.share({
+        title: 'リンクを共有',
+        text: '',
+        url: url,
+      })
+    }
+
     return {
       ...toRefs(state),
       myVideo,
       theirVideo,
       clickCall,
+      shareUrl,
+      clickShare,
     }
   },
 })

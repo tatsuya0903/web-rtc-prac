@@ -3,12 +3,8 @@ import router from '@/router'
 import { RouteLocations } from '@/router/models'
 
 export class RouterHelper {
-  static moveHome(
-    apiKey: string,
-    myPeerId: string | null,
-    theirPeerId: string | null,
-  ): Promise<Route> {
-    const to = RouteLocations.toHome(apiKey, myPeerId, theirPeerId)
+  static moveHome(apiKey: string | null, theirPeerId: string | null): Promise<Route> {
+    const to = RouteLocations.toHome(apiKey, theirPeerId)
     return this.moveLocation(to)
   }
 
