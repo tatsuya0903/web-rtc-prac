@@ -2,12 +2,12 @@
   <div class="debug-sky-way">
     <v-row>
       <v-col cols="12" md="6" class="debug-sky-way__item">
-        <v-text-field hide-details dense outlined label="自分のPeerID" readonly :value="peerId" />
+        <InputText label="自分のPeerID" :value="myPeerId" readonly />
         <video ref="myVideo" width="100%" autoplay muted playsinline />
       </v-col>
       <v-col cols="12" md="6" class="debug-sky-way__item">
         <div style="display: flex; flex-direction: row">
-          <v-text-field hide-details v-model="theirPeerId" dense outlined label="相手のPeerId" />
+          <InputText v-model="theirPeerId" label="相手のPeerId" />
           <v-btn @click="clickCall">発信</v-btn>
         </div>
         <video ref="theirVideo" width="100%" autoplay muted playsinline />
@@ -17,33 +17,50 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, ref, onMounted } from '@vue/composition-api'
-import Peer, { MediaConnection } from 'skyway-js'
+import { defineComponent, reactive, toRefs, ref, onMounted, watch } from '@vue/composition-api'
+import Peer, { MediaConnection, PeerConstructorOption } from 'skyway-js'
+import { LocalStorage } from '@/localStorage'
+import InputText from '@/components/InputText.vue'
 
 type State = {
-  peerId: string | null
+  myPeerId: string
   theirPeerId: string
 }
 type Props = {
   apiKey: string
 }
 export default defineComponent({
-  components: {},
+  components: { InputText },
   props: {
     apiKey: { type: String, required: true },
   },
   setup(props: Props) {
+    const myPageId = LocalStorage.myPeerId
+    const theirPeerId = LocalStorage.theirPeerId
     const state = reactive<State>({
-      peerId: null,
-      theirPeerId: '',
+      myPeerId: myPageId ?? '',
+      theirPeerId: theirPeerId ?? '',
     })
+    watch(
+      () => state.myPeerId,
+      (value: string | null) => {
+        LocalStorage.myPeerId = value
+      },
+    )
+    watch(
+      () => state.theirPeerId,
+      (value: string | null) => {
+        LocalStorage.theirPeerId = value
+      },
+    )
 
-    const peer = new Peer({
+    const options: PeerConstructorOption = {
       key: props.apiKey,
       debug: 3,
-    })
+    }
+    const peer = myPageId === null ? new Peer(options) : new Peer(myPageId, options)
     peer.on('open', () => {
-      state.peerId = peer.id
+      state.myPeerId = peer.id
     })
     //着信処理
     peer.on('call', (mediaConnection: MediaConnection) => {

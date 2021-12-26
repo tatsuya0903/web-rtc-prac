@@ -1,0 +1,51 @@
+<template>
+  <LayoutPage>
+    <template v-slot:main>
+      <v-card max-width="480px">
+        <v-card-text>
+          <InputText v-model="apiKey" label="アクセスキー" />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn text color="teal accent-4" @click="clickDone">決定</v-btn>
+        </v-card-actions>
+      </v-card>
+    </template>
+  </LayoutPage>
+</template>
+
+<script lang="ts">
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+import LayoutPage from '@/components/LayoutPage.vue'
+import { LocalStorage } from '@/localStorage'
+import InputText from '@/components/InputText.vue'
+import { RouterHelper } from '@/router-helper/RouterHelper'
+import { Env } from '@/env'
+
+type State = {
+  apiKey: string
+}
+export default defineComponent({
+  components: { InputText, LayoutPage },
+  setup() {
+    const state = reactive<State>({
+      apiKey: LocalStorage.settings.apiKey ?? Env.skyWayApiKey ?? '',
+    })
+
+    const clickDone = async () => {
+      await RouterHelper.moveHome(
+        state.apiKey,
+        LocalStorage.settings.myPeerId,
+        LocalStorage.settings.theirPeerId,
+      )
+    }
+    return {
+      ...toRefs(state),
+      clickDone,
+      settings: LocalStorage.settings,
+    }
+  },
+})
+</script>
+
+<style lang="scss" scoped></style>
