@@ -4,8 +4,10 @@ import './registerServiceWorker'
 import router from './router'
 import store from './store'
 import vuetify from './plugins/vuetify'
+import VueCompositionAPI from '@vue/composition-api'
 
 Vue.config.productionTip = false
+Vue.use(VueCompositionAPI)
 
 new Vue({
   router,

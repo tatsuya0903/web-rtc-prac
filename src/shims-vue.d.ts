@@ -1,4 +1,5 @@
 declare module '*.vue' {
-  import Vue from 'vue'
-  export default Vue
+  import type { defineComponent } from '@vue/composition-api'
+  const component: defineComponent<{}, {}, any>
+  export default component
 }
