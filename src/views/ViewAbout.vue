@@ -1,12 +1,5 @@
 <template>
-  <v-app>
-    <v-app-bar app color="primary" dark>
-      <div class="d-flex align-center">タイトル</div>
-    </v-app-bar>
-    <v-main>
-      <router-view />
-    </v-main>
-  </v-app>
+  <div>ViewAbout.vue</div>
 </template>
 
 <script lang="ts">
