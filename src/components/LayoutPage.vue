@@ -1,5 +1,9 @@
 <template>
-  <div>ViewAbout.vue</div>
+  <div class="layout-page">
+    <v-container>
+      <slot name="main" />
+    </v-container>
+  </div>
 </template>
 
 <script lang="ts">
@@ -17,4 +21,7 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.layout-page {
+}
+</style>
