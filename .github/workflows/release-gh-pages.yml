@@ -6,7 +6,25 @@ on:
 jobs:
   release:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
     steps:
       - uses: actions/checkout@v2
-      - name: Run a one-line script
-        run: echo Hello, world!
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build-docs
+      - name: gh-pagesブランチを更新
+        run: |
+          git --version
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git branch -a
+          git checkout -b gh-pages
+          git add --all
+          git commit -a -m "npm run build-docs"
+          git push --force origin gh-pages
