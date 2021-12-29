@@ -3,7 +3,7 @@
     <v-app-bar app color="primary" dark>
       <v-app-bar-title>タイトル</v-app-bar-title>
       <v-spacer />
-      <div style="color: white; opacity: 0.2">{{ version }}</div>
+      <a style="color: white; opacity: 0.2" :href="commitUrl" target="_blank">{{ commitHash7 }}</a>
     </v-app-bar>
     <v-main>
       <router-view />
@@ -20,10 +20,12 @@ export default defineComponent({
   components: {},
   setup() {
     const state = reactive<State>({})
-    const version = Env.commitHash?.substring(0, 7) ?? ''
+    const commitHash7 = Env.commitHash?.substring(0, 7) ?? ''
+    const commitUrl = Env.commitUrl
     return {
       ...toRefs(state),
-      version,
+      commitHash7,
+      commitUrl,
     }
   },
 })
