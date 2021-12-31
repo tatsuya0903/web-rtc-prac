@@ -13,7 +13,10 @@
         </v-btn>
       </v-col>
       <v-col cols="12" md="6" class="debug-sky-way__item">
-        <InputText label="自分のPeerID" :value="myPeerId" readonly />
+        <div style="display: flex; flex-direction: row">
+          <InputText label="自分のPeerID" :value="myPeerId" readonly />
+          <v-btn @click="clickChangeCamera">カメラ切替</v-btn>
+        </div>
         <video ref="myVideo" width="100%" autoplay muted playsinline />
       </v-col>
       <v-col cols="12" md="6" class="debug-sky-way__item">
@@ -89,9 +92,12 @@ export default defineComponent({
         alert('ERROR')
         return
       }
+
       state.theirPeerId = mediaConnection.remoteId
       mediaConnection.answer(localStream)
       setEventListener(mediaConnection)
+
+      localMediaConnection = mediaConnection
     })
     peer.on('error', (err) => {
       alert(err.message)
@@ -101,6 +107,7 @@ export default defineComponent({
     })
 
     let localStream: MediaStream | null = null
+    let localMediaConnection: MediaConnection | null = null
 
     // カメラ映像取得
     const myVideo = ref<HTMLVideoElement>()
@@ -149,6 +156,20 @@ export default defineComponent({
       executeCall(state.theirPeerId)
     }
 
+    const clickChangeCamera = async () => {
+      if (localMediaConnection === null) {
+        return
+      }
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'user', // フロントカメラ（ユーザ側カメラ）
+        },
+        audio: true,
+      })
+      localMediaConnection.replaceStream(mediaStream)
+    }
+
     // イベントリスナを設置する関数
     const setEventListener = (mediaConnection: MediaConnection) => {
       const element = theirVideo.value
@@ -169,6 +190,8 @@ export default defineComponent({
       }
       const mediaConnection = peer.call(theirPeerId, localStream)
       setEventListener(mediaConnection)
+
+      localMediaConnection = mediaConnection
     }
 
     const clickShare = async (url: string) => {
@@ -186,6 +209,7 @@ export default defineComponent({
       clickCall,
       shareUrl,
       clickShare,
+      clickChangeCamera,
     }
   },
 })
