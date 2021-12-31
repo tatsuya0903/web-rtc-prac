@@ -108,7 +108,12 @@ export default defineComponent({
 
     const init = async (element: HTMLVideoElement) => {
       try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: 'environment', // バックカメラ（環境側カメラ）を利用
+          },
+          audio: true,
+        })
 
         // video要素にカメラ映像をセットし、再生
         element.srcObject = mediaStream
