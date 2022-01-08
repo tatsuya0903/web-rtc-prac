@@ -11,9 +11,9 @@
         <v-btn icon @click="clickShare(shareUrl)">
           <v-icon>mdi-share-variant</v-icon>
         </v-btn>
-      </v-col>
-      <v-col cols="12" class="debug-sky-way__item">
-        <QrCode v-if="shareUrl !== null" :size="280" :data="shareUrl" />
+        <v-btn icon @click="clickQr(shareUrl)">
+          <v-icon>mdi-qrcode</v-icon>
+        </v-btn>
       </v-col>
       <v-col cols="12" class="debug-sky-way__item">
         <CameraSelect v-model="cameraDeviceId" />
@@ -50,7 +50,7 @@ import { LocalStorage } from '@/localStorage'
 import InputText from '@/components/InputText.vue'
 import { Common } from '@/common'
 import CameraSelect from '@/components/CameraSelect.vue'
-import QrCode from '@/components/QrCode.vue'
+import { Dialogs } from '@/dialogs'
 
 type State = {
   myPeerId: string
@@ -61,7 +61,7 @@ type Props = {
   apiKey: string
 }
 export default defineComponent({
-  components: { QrCode, CameraSelect, InputText },
+  components: { CameraSelect, InputText },
   props: {
     apiKey: { type: String, required: true },
   },
@@ -198,6 +198,9 @@ export default defineComponent({
       localMediaConnection = mediaConnection
     }
 
+    const clickQr = async (url: string) => {
+      await Dialogs.showShareUrl(url)
+    }
     const clickShare = async (url: string) => {
       await navigator.share({
         title: 'リンクを共有',
@@ -212,6 +215,7 @@ export default defineComponent({
       theirVideo,
       clickCall,
       shareUrl,
+      clickQr,
       clickShare,
     }
   },
