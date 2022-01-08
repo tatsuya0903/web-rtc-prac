@@ -13,6 +13,9 @@
         </v-btn>
       </v-col>
       <v-col cols="12" class="debug-sky-way__item">
+        <QrCode v-if="shareUrl !== null" :size="280" :data="shareUrl" />
+      </v-col>
+      <v-col cols="12" class="debug-sky-way__item">
         <CameraSelect v-model="cameraDeviceId" />
       </v-col>
       <v-col cols="12" md="6" class="debug-sky-way__item">
@@ -47,6 +50,7 @@ import { LocalStorage } from '@/localStorage'
 import InputText from '@/components/InputText.vue'
 import { Common } from '@/common'
 import CameraSelect from '@/components/CameraSelect.vue'
+import QrCode from '@/components/QrCode.vue'
 
 type State = {
   myPeerId: string
@@ -57,7 +61,7 @@ type Props = {
   apiKey: string
 }
 export default defineComponent({
-  components: { CameraSelect, InputText },
+  components: { QrCode, CameraSelect, InputText },
   props: {
     apiKey: { type: String, required: true },
   },
