@@ -26,6 +26,9 @@
         </div>
         <video ref="theirVideo" width="100%" autoplay muted playsinline />
       </v-col>
+      <v-col cols="12">
+        <CameraSelect v-model="cameraDeviceId" />
+      </v-col>
     </v-row>
   </div>
 </template>
@@ -44,16 +47,18 @@ import Peer, { MediaConnection, PeerConstructorOption } from 'skyway-js'
 import { LocalStorage } from '@/localStorage'
 import InputText from '@/components/InputText.vue'
 import { Common } from '@/common'
+import CameraSelect from '@/components/CameraSelect.vue'
 
 type State = {
   myPeerId: string
   theirPeerId: string
+  cameraDeviceId: string | null
 }
 type Props = {
   apiKey: string
 }
 export default defineComponent({
-  components: { InputText },
+  components: { CameraSelect, InputText },
   props: {
     apiKey: { type: String, required: true },
   },
@@ -63,6 +68,7 @@ export default defineComponent({
     const state = reactive<State>({
       myPeerId: myPageId ?? '',
       theirPeerId: theirPeerId ?? '',
+      cameraDeviceId: null,
     })
     watch(
       () => state.myPeerId,
@@ -113,15 +119,14 @@ export default defineComponent({
     const myVideo = ref<HTMLVideoElement>()
     const theirVideo = ref<HTMLVideoElement>()
 
-    const init = async (element: HTMLVideoElement) => {
+    const init = async (element: HTMLVideoElement, cameraDeviceId: string) => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
           video: {
-            facingMode: 'environment', // バックカメラ（環境側カメラ）を利用
+            deviceId: cameraDeviceId,
           },
-          audio: true,
+          audio: false,
         })
-
         // video要素にカメラ映像をセットし、再生
         element.srcObject = mediaStream
         await element.play()
@@ -146,11 +151,17 @@ export default defineComponent({
 
     onMounted(() => {
       console.log(`onMounted >> `)
-      const element = myVideo.value
-      if (element) {
-        init(element)
-      }
     })
+
+    watch(
+      () => state.cameraDeviceId,
+      (cameraDeviceId: string | null) => {
+        const element = myVideo.value
+        if (element && cameraDeviceId) {
+          init(element, cameraDeviceId)
+        }
+      },
+    )
 
     const clickCall = async () => {
       executeCall(state.theirPeerId)
