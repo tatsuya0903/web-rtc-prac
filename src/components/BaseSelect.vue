@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <v-select v-model="localValue" dense :items="items" :label="label" outlined />
-  </div>
+  <v-select v-model="localValue" dense :items="items" hide-details :label="label" outlined />
 </template>
 
 <script lang="ts">

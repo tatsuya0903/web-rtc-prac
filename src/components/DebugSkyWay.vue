@@ -12,10 +12,12 @@
           <v-icon>mdi-share-variant</v-icon>
         </v-btn>
       </v-col>
+      <v-col cols="12" class="debug-sky-way__item">
+        <CameraSelect v-model="cameraDeviceId" />
+      </v-col>
       <v-col cols="12" md="6" class="debug-sky-way__item">
         <div style="display: flex; flex-direction: row">
           <InputText label="自分のPeerID" :value="myPeerId" readonly />
-          <v-btn @click="clickChangeCamera">カメラ切替</v-btn>
         </div>
         <video ref="myVideo" width="100%" autoplay muted playsinline />
       </v-col>
@@ -25,9 +27,6 @@
           <v-btn @click="clickCall">発信</v-btn>
         </div>
         <video ref="theirVideo" width="100%" autoplay muted playsinline />
-      </v-col>
-      <v-col cols="12">
-        <CameraSelect v-model="cameraDeviceId" />
       </v-col>
     </v-row>
   </div>
@@ -119,7 +118,7 @@ export default defineComponent({
     const myVideo = ref<HTMLVideoElement>()
     const theirVideo = ref<HTMLVideoElement>()
 
-    const init = async (element: HTMLVideoElement, cameraDeviceId: string) => {
+    const changeCamera = async (element: HTMLVideoElement, cameraDeviceId: string) => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
           video: {
@@ -133,6 +132,10 @@ export default defineComponent({
 
         // 着信時に相手にカメラ映像を返せるように、グローバル変数に保存しておく
         localStream = mediaStream
+
+        if (localMediaConnection !== null) {
+          localMediaConnection.replaceStream(mediaStream)
+        }
       } catch (e) {
         // 失敗時にはエラーログを出力
         console.error('mediaDevice.getUserMedia() error:', e.message)
@@ -158,27 +161,13 @@ export default defineComponent({
       (cameraDeviceId: string | null) => {
         const element = myVideo.value
         if (element && cameraDeviceId) {
-          init(element, cameraDeviceId)
+          changeCamera(element, cameraDeviceId)
         }
       },
     )
 
     const clickCall = async () => {
       executeCall(state.theirPeerId)
-    }
-
-    const clickChangeCamera = async () => {
-      if (localMediaConnection === null) {
-        return
-      }
-
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'user', // フロントカメラ（ユーザ側カメラ）
-        },
-        audio: true,
-      })
-      localMediaConnection.replaceStream(mediaStream)
     }
 
     // イベントリスナを設置する関数
@@ -220,7 +209,6 @@ export default defineComponent({
       clickCall,
       shareUrl,
       clickShare,
-      clickChangeCamera,
     }
   },
 })
