@@ -20,7 +20,9 @@ export default defineComponent({
     const state = reactive<State>({})
 
     const createUrl = (size: number, data: string): string => {
-      return `https://chart.googleapis.com/chart?cht=qr&chs=${size}x${size}&chl=${data}`
+      return `https://chart.googleapis.com/chart?cht=qr&chs=${size}x${size}&chl=${encodeURIComponent(
+        data,
+      )}`
     }
     const url = createUrl(props.size, props.data)
 
