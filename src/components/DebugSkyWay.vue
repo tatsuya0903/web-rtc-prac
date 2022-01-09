@@ -22,29 +22,21 @@
         <div style="display: flex; flex-direction: row">
           <PeerIdForm label="自分のPeerID" :value="myPeerId" readonly />
         </div>
-        <video ref="myVideo" width="100%" autoplay muted playsinline />
+        <VideoPreview :media-stream="myMediaStream" />
       </v-col>
       <v-col cols="12" md="6" class="debug-sky-way__item">
         <div style="display: flex; flex-direction: row">
           <PeerIdForm v-model="theirPeerId" label="相手のPeerId" />
           <v-btn @click="clickCall">発信</v-btn>
         </div>
-        <video ref="theirVideo" width="100%" autoplay muted playsinline />
+        <VideoPreview :media-stream="theirMediaStream" />
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  reactive,
-  toRefs,
-  ref,
-  onMounted,
-  watch,
-  computed,
-} from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, onMounted, watch, computed } from '@vue/composition-api'
 import { LocalStorage } from '@/localStorage'
 import InputText from '@/components/InputText.vue'
 import { Common } from '@/common'
@@ -52,6 +44,7 @@ import CameraSelect from '@/components/CameraSelect.vue'
 import { Dialogs } from '@/dialogs'
 import { useSkyWay } from '@/composables/useSkyWay'
 import PeerIdForm from '@/components/PeerIdForm.vue'
+import VideoPreview from '@/components/VideoPreview.vue'
 
 type State = {
   cameraDeviceId: string | null
@@ -60,7 +53,7 @@ type Props = {
   apiKey: string
 }
 export default defineComponent({
-  components: { PeerIdForm, CameraSelect, InputText },
+  components: { VideoPreview, PeerIdForm, CameraSelect, InputText },
   props: {
     apiKey: { type: String, required: true },
   },
@@ -98,11 +91,7 @@ export default defineComponent({
       },
     )
 
-    // カメラ映像取得
-    const myVideo = ref<HTMLVideoElement>()
-    const theirVideo = ref<HTMLVideoElement>()
-
-    const changeCamera = async (element: HTMLVideoElement, cameraDeviceId: string) => {
+    const changeCamera = async (cameraDeviceId: string) => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
           video: {
@@ -110,9 +99,6 @@ export default defineComponent({
           },
           audio: false,
         })
-        // video要素にカメラ映像をセットし、再生
-        element.srcObject = mediaStream
-        await element.play()
 
         // 着信時に相手にカメラ映像を返せるように、グローバル変数に保存しておく
         myMediaStream.value = mediaStream
@@ -138,10 +124,9 @@ export default defineComponent({
 
     watch(
       () => state.cameraDeviceId,
-      (cameraDeviceId: string | null) => {
-        const element = myVideo.value
-        if (element && cameraDeviceId) {
-          changeCamera(element, cameraDeviceId)
+      (value: string | null) => {
+        if (value !== null) {
+          changeCamera(value)
         }
       },
     )
@@ -149,18 +134,6 @@ export default defineComponent({
     const clickCall = async () => {
       executeCall()
     }
-
-    watch(
-      () => theirMediaStream.value,
-      (value: MediaStream | null) => {
-        const element = theirVideo.value
-        if (element) {
-          // video要素にカメラ映像をセットして再生
-          element.srcObject = value
-          element.play()
-        }
-      },
-    )
 
     const clickQr = async (url: string) => {
       await Dialogs.showShareUrl(url)
@@ -176,13 +149,13 @@ export default defineComponent({
     return {
       ...toRefs(state),
       myPeerId,
-      myVideo,
       theirPeerId,
-      theirVideo,
       clickCall,
       shareUrl,
       clickQr,
       clickShare,
+      myMediaStream,
+      theirMediaStream,
     }
   },
 })
