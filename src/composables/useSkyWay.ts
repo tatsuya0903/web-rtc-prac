@@ -4,6 +4,7 @@ import Peer, { MediaConnection, PeerConstructorOption } from 'skyway-js'
 export interface Payload {
   apiKey: string
   myPeerId: string | null
+  theirPeerId: string | null
   callbackOpened: () => void
   callbackCalled: () => void
   callbackClosed: () => void
@@ -12,8 +13,8 @@ export interface Payload {
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useSkyWay = (payload: Payload) => {
-  const myPeerId = ref<string | null>(null)
-  const theirPeerId = ref<string | null>(null)
+  const myPeerId = ref<string | null>(payload.myPeerId)
+  const theirPeerId = ref<string | null>(payload.theirPeerId)
   const myMediaStream = ref<MediaStream | null>(null)
   const theirMediaStream = ref<MediaStream | null>(null)
   const localMediaConnection = ref<MediaConnection | null>(null)
