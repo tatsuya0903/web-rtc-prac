@@ -61,6 +61,7 @@ export default defineComponent({
     const { myPeerId, myMediaStream, theirPeerId, theirMediaStream, executeCall } = useSkyWay({
       apiKey: props.apiKey,
       myPeerId: LocalStorage.myPeerId,
+      theirPeerId: LocalStorage.theirPeerId,
       callbackOpened: () => {
         alert('callbackOpened!!!')
       },
