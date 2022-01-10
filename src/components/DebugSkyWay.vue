@@ -46,6 +46,7 @@ import { Dialogs } from '@/dialogs'
 import { useSkyWay } from '@/composables/useSkyWay'
 import PeerIdForm from '@/components/PeerIdForm.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
+import { Snackbars } from '@/snackbars'
 
 type State = {
   cameraDeviceId: string | null
@@ -65,16 +66,16 @@ export default defineComponent({
         myPeerId: LocalStorage.myPeerId,
         theirPeerId: LocalStorage.theirPeerId,
         callbackOpened: () => {
-          alert('callbackOpened!!!')
+          Snackbars.show('準備OK')
         },
         callbackCalled: () => {
-          alert('callbackCalled!!!')
+          Snackbars.show('通話開始')
         },
         callbackClosed: () => {
-          alert('callbackClosed!!!')
+          Snackbars.show('通話が終了しました')
         },
         callbackError: (message: string) => {
-          alert(`callbackError: ${message}`)
+          Dialogs.showError(message)
         },
       })
 

@@ -1,13 +1,12 @@
 import Vue from 'vue'
-import DialogShareUrl from '@/components/DialogShareUrl.vue'
-import DialogError from '@/components/DialogError.vue'
+import SnackbarDefault from '@/components/SnackbarDefault.vue'
 
-export class Dialogs {
-  static async showError(message: string): Promise<void> {
+export class Snackbars {
+  static async show(message: string): Promise<void> {
     return new Promise<void>((resolve) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      const DialogVue = Vue.extend(DialogError)
+      const DialogVue = Vue.extend(SnackbarDefault)
       const vm = new DialogVue({
         parent: this.parent,
         propsData: {
@@ -16,27 +15,7 @@ export class Dialogs {
             resolve()
             setTimeout(() => {
               this.removeElement(vm)
-            }, 100)
-          },
-        },
-      })
-      this.attachElement(vm)
-    })
-  }
-  static async showShareUrl(url: string): Promise<void> {
-    return new Promise<void>((resolve) => {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      const DialogVue = Vue.extend(DialogShareUrl)
-      const vm = new DialogVue({
-        parent: this.parent,
-        propsData: {
-          url: url,
-          callbackClosed: () => {
-            resolve()
-            setTimeout(() => {
-              this.removeElement(vm)
-            }, 100)
+            }, 1000)
           },
         },
       })
