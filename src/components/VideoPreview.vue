@@ -25,11 +25,14 @@ export default defineComponent({
       (value: MediaStream | null) => {
         const element = video.value
         if (element) {
-          element.srcObject = value
           if (value === null) {
-            element.pause()
+            if (element.srcObject instanceof MediaStream) {
+              element.srcObject.getTracks().forEach((track) => track.stop())
+            }
+            element.srcObject = null
           } else {
             // video要素にカメラ映像をセットして再生
+            element.srcObject = value
             element.play()
           }
         }

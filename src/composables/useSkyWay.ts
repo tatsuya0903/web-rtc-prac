@@ -1,4 +1,4 @@
-import { ref, watch } from '@vue/composition-api'
+import { onBeforeUnmount, ref, watch } from '@vue/composition-api'
 import Peer, { MediaConnection, PeerConstructorOption } from 'skyway-js'
 
 export interface Payload {
@@ -81,6 +81,11 @@ export const useSkyWay = (payload: Payload) => {
   const executeClose = (): void => {
     localMediaConnection.value?.close(true)
   }
+
+  onBeforeUnmount(() => {
+    localMediaConnection.value?.close(true)
+    peer.destroy()
+  })
 
   return {
     myPeerId,
