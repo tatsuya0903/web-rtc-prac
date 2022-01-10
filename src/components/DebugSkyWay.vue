@@ -20,109 +20,82 @@
       </v-col>
       <v-col cols="12" md="6" class="debug-sky-way__item">
         <div style="display: flex; flex-direction: row">
-          <InputText label="自分のPeerID" :value="myPeerId" readonly />
+          <PeerIdForm label="自分のPeerID" :value="myPeerId" readonly />
         </div>
-        <video ref="myVideo" width="100%" autoplay muted playsinline />
+        <VideoPreview :media-stream="myMediaStream" />
       </v-col>
       <v-col cols="12" md="6" class="debug-sky-way__item">
         <div style="display: flex; flex-direction: row">
-          <InputText v-model="theirPeerId" label="相手のPeerId" />
+          <PeerIdForm v-model="theirPeerId" label="相手のPeerId" />
           <v-btn @click="clickCall">発信</v-btn>
+          <v-btn @click="clickClose">終了</v-btn>
         </div>
-        <video ref="theirVideo" width="100%" autoplay muted playsinline />
+        <VideoPreview :media-stream="theirMediaStream" />
       </v-col>
     </v-row>
   </div>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent,
-  reactive,
-  toRefs,
-  ref,
-  onMounted,
-  watch,
-  computed,
-} from '@vue/composition-api'
-import Peer, { MediaConnection, PeerConstructorOption } from 'skyway-js'
+import { defineComponent, reactive, toRefs, onMounted, watch, computed } from '@vue/composition-api'
 import { LocalStorage } from '@/localStorage'
 import InputText from '@/components/InputText.vue'
 import { Common } from '@/common'
 import CameraSelect from '@/components/CameraSelect.vue'
 import { Dialogs } from '@/dialogs'
+import { useSkyWay } from '@/composables/useSkyWay'
+import PeerIdForm from '@/components/PeerIdForm.vue'
+import VideoPreview from '@/components/VideoPreview.vue'
+import { Snackbars } from '@/snackbars'
 
 type State = {
-  myPeerId: string
-  theirPeerId: string
   cameraDeviceId: string | null
 }
 type Props = {
   apiKey: string
 }
 export default defineComponent({
-  components: { CameraSelect, InputText },
+  components: { VideoPreview, PeerIdForm, CameraSelect, InputText },
   props: {
     apiKey: { type: String, required: true },
   },
   setup(props: Props) {
-    const myPageId = LocalStorage.myPeerId
-    const theirPeerId = LocalStorage.theirPeerId
+    const { myPeerId, myMediaStream, theirPeerId, theirMediaStream, executeCall, executeClose } =
+      useSkyWay({
+        apiKey: props.apiKey,
+        myPeerId: LocalStorage.myPeerId,
+        theirPeerId: LocalStorage.theirPeerId,
+        callbackOpened: () => {
+          Snackbars.show('準備OK')
+        },
+        callbackCalled: () => {
+          Snackbars.show('通話開始')
+        },
+        callbackClosed: () => {
+          Snackbars.show('通話が終了しました')
+        },
+        callbackError: (message: string) => {
+          Dialogs.showError(message)
+        },
+      })
+
     const state = reactive<State>({
-      myPeerId: myPageId ?? '',
-      theirPeerId: theirPeerId ?? '',
       cameraDeviceId: null,
     })
     watch(
-      () => state.myPeerId,
+      () => myPeerId.value,
       (value: string | null) => {
         LocalStorage.myPeerId = value
       },
     )
     watch(
-      () => state.theirPeerId,
+      () => theirPeerId.value,
       (value: string | null) => {
         LocalStorage.theirPeerId = value
       },
     )
 
-    const options: PeerConstructorOption = {
-      key: props.apiKey,
-      debug: 3,
-    }
-    const peer = myPageId === null ? new Peer(options) : new Peer(myPageId, options)
-    peer.on('open', () => {
-      state.myPeerId = peer.id
-    })
-    //着信処理
-    peer.on('call', (mediaConnection: MediaConnection) => {
-      alert('着信しました!!!')
-      if (localStream === null) {
-        alert('ERROR')
-        return
-      }
-
-      state.theirPeerId = mediaConnection.remoteId
-      mediaConnection.answer(localStream)
-      setEventListener(mediaConnection)
-
-      localMediaConnection = mediaConnection
-    })
-    peer.on('error', (err) => {
-      alert(err.message)
-    })
-    peer.on('close', () => {
-      alert('通信が切断しました。')
-    })
-
-    let localStream: MediaStream | null = null
-    let localMediaConnection: MediaConnection | null = null
-
-    // カメラ映像取得
-    const myVideo = ref<HTMLVideoElement>()
-    const theirVideo = ref<HTMLVideoElement>()
-
-    const changeCamera = async (element: HTMLVideoElement, cameraDeviceId: string) => {
+    const changeCamera = async (cameraDeviceId: string) => {
       try {
         const mediaStream = await navigator.mediaDevices.getUserMedia({
           video: {
@@ -130,16 +103,9 @@ export default defineComponent({
           },
           audio: false,
         })
-        // video要素にカメラ映像をセットし、再生
-        element.srcObject = mediaStream
-        await element.play()
 
         // 着信時に相手にカメラ映像を返せるように、グローバル変数に保存しておく
-        localStream = mediaStream
-
-        if (localMediaConnection !== null) {
-          localMediaConnection.replaceStream(mediaStream)
-        }
+        myMediaStream.value = mediaStream
       } catch (e) {
         // 失敗時にはエラーログを出力
         console.error('mediaDevice.getUserMedia() error:', e.message)
@@ -149,7 +115,7 @@ export default defineComponent({
 
     const shareUrl = computed(() => {
       const apiKey = props.apiKey
-      const theirPeerId = state.myPeerId
+      const theirPeerId = myPeerId.value ?? ''
       if (theirPeerId.length === 0) {
         return null
       }
@@ -162,40 +128,18 @@ export default defineComponent({
 
     watch(
       () => state.cameraDeviceId,
-      (cameraDeviceId: string | null) => {
-        const element = myVideo.value
-        if (element && cameraDeviceId) {
-          changeCamera(element, cameraDeviceId)
+      (value: string | null) => {
+        if (value !== null) {
+          changeCamera(value)
         }
       },
     )
 
     const clickCall = async () => {
-      executeCall(state.theirPeerId)
+      executeCall()
     }
-
-    // イベントリスナを設置する関数
-    const setEventListener = (mediaConnection: MediaConnection) => {
-      const element = theirVideo.value
-      if (element) {
-        mediaConnection.on('stream', (stream) => {
-          // video要素にカメラ映像をセットして再生
-
-          element.srcObject = stream
-          element.play()
-        })
-      }
-    }
-
-    const executeCall = (theirPeerId: string) => {
-      if (localStream === null) {
-        alert('ERROR')
-        return
-      }
-      const mediaConnection = peer.call(theirPeerId, localStream)
-      setEventListener(mediaConnection)
-
-      localMediaConnection = mediaConnection
+    const clickClose = async () => {
+      executeClose()
     }
 
     const clickQr = async (url: string) => {
@@ -211,12 +155,15 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      myVideo,
-      theirVideo,
+      myPeerId,
+      theirPeerId,
       clickCall,
+      clickClose,
       shareUrl,
       clickQr,
       clickShare,
+      myMediaStream,
+      theirMediaStream,
     }
   },
 })
