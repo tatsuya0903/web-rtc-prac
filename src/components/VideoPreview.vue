@@ -27,7 +27,7 @@ export default defineComponent({
         if (element) {
           if (value === null) {
             if (element.srcObject instanceof MediaStream) {
-              element.srcObject.getTracks().forEach((track) => track.stop())
+              element.srcObject.getTracks().map((track) => track.stop())
             }
             element.srcObject = null
           } else {
