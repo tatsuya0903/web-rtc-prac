@@ -36,6 +36,9 @@ export const useSkyWay = (payload: Payload) => {
     mediaConnection.on('stream', (stream) => {
       theirMediaStream.value = stream
     })
+    mediaConnection.on('close', () => {
+      payload.callbackClosed()
+    })
 
     localMediaConnection.value = mediaConnection
 
@@ -66,11 +69,25 @@ export const useSkyWay = (payload: Payload) => {
     mediaConnection.on('stream', (stream) => {
       theirMediaStream.value = stream
     })
+    mediaConnection.on('close', () => {
+      payload.callbackClosed()
+    })
 
     localMediaConnection.value = mediaConnection
 
     return true
   }
 
-  return { myPeerId, myMediaStream, theirPeerId, theirMediaStream, executeCall }
+  const executeClose = (): void => {
+    localMediaConnection.value?.close(true)
+  }
+
+  return {
+    myPeerId,
+    myMediaStream,
+    theirPeerId,
+    theirMediaStream,
+    executeCall,
+    executeClose,
+  }
 }

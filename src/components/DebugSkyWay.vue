@@ -28,6 +28,7 @@
         <div style="display: flex; flex-direction: row">
           <PeerIdForm v-model="theirPeerId" label="相手のPeerId" />
           <v-btn @click="clickCall">発信</v-btn>
+          <v-btn @click="clickClose">終了</v-btn>
         </div>
         <VideoPreview :media-stream="theirMediaStream" />
       </v-col>
@@ -58,23 +59,24 @@ export default defineComponent({
     apiKey: { type: String, required: true },
   },
   setup(props: Props) {
-    const { myPeerId, myMediaStream, theirPeerId, theirMediaStream, executeCall } = useSkyWay({
-      apiKey: props.apiKey,
-      myPeerId: LocalStorage.myPeerId,
-      theirPeerId: LocalStorage.theirPeerId,
-      callbackOpened: () => {
-        alert('callbackOpened!!!')
-      },
-      callbackCalled: () => {
-        alert('callbackCalled!!!')
-      },
-      callbackClosed: () => {
-        alert('callbackClosed!!!')
-      },
-      callbackError: (message: string) => {
-        alert(`callbackError: ${message}`)
-      },
-    })
+    const { myPeerId, myMediaStream, theirPeerId, theirMediaStream, executeCall, executeClose } =
+      useSkyWay({
+        apiKey: props.apiKey,
+        myPeerId: LocalStorage.myPeerId,
+        theirPeerId: LocalStorage.theirPeerId,
+        callbackOpened: () => {
+          alert('callbackOpened!!!')
+        },
+        callbackCalled: () => {
+          alert('callbackCalled!!!')
+        },
+        callbackClosed: () => {
+          alert('callbackClosed!!!')
+        },
+        callbackError: (message: string) => {
+          alert(`callbackError: ${message}`)
+        },
+      })
 
     const state = reactive<State>({
       cameraDeviceId: null,
@@ -135,6 +137,9 @@ export default defineComponent({
     const clickCall = async () => {
       executeCall()
     }
+    const clickClose = async () => {
+      executeClose()
+    }
 
     const clickQr = async (url: string) => {
       await Dialogs.showShareUrl(url)
@@ -152,6 +157,7 @@ export default defineComponent({
       myPeerId,
       theirPeerId,
       clickCall,
+      clickClose,
       shareUrl,
       clickQr,
       clickShare,
