@@ -2,6 +2,9 @@ import Vue from 'vue'
 import SnackbarDefault from '@/components/SnackbarDefault.vue'
 
 export class Snackbars {
+  static async todo(message = '準備中'): Promise<void> {
+    return this.show(message)
+  }
   static async show(message: string): Promise<void> {
     return new Promise<void>((resolve) => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment

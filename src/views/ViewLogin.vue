@@ -33,8 +33,7 @@ export default defineComponent({
     })
 
     const clickDone = async () => {
-      LocalStorage.apiKey = state.apiKey
-      await RouterHelper.moveHome(null, null)
+      await RouterHelper.moveTop(state.apiKey)
     }
     return {
       ...toRefs(state),
