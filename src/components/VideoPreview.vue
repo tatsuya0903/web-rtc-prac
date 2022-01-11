@@ -5,7 +5,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, ref, toRefs, watch } from '@vue/composition-api'
+import { defineComponent, onMounted, reactive, ref, toRefs, watch } from '@vue/composition-api'
 
 type State = {}
 type Props = {
@@ -23,21 +23,28 @@ export default defineComponent({
     watch(
       () => props.mediaStream,
       (value: MediaStream | null) => {
-        const element = video.value
-        if (element) {
-          if (value === null) {
-            if (element.srcObject instanceof MediaStream) {
-              element.srcObject.getTracks().map((track) => track.stop())
-            }
-            element.srcObject = null
-          } else {
-            // video要素にカメラ映像をセットして再生
-            element.srcObject = value
-            element.play()
-          }
-        }
+        excute(value)
       },
     )
+
+    onMounted(() => {
+      excute(props.mediaStream)
+    })
+    const excute = (value: MediaStream | null) => {
+      const element = video.value
+      if (element) {
+        if (value === null) {
+          if (element.srcObject instanceof MediaStream) {
+            element.srcObject.getTracks().map((track) => track.stop())
+          }
+          element.srcObject = null
+        } else {
+          // video要素にカメラ映像をセットして再生
+          element.srcObject = value
+          element.play()
+        }
+      }
+    }
     return {
       ...toRefs(state),
       video,
@@ -48,9 +55,10 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .video-preview {
-  border: 1px lightblue solid;
+  border: 1px lightgray solid;
   font-size: 0px;
   border-radius: 16px;
   overflow: hidden;
+  background: black;
 }
 </style>

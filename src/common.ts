@@ -2,6 +2,12 @@ export class Common {
   static createShareUrl(apiKey: string, theirPeerId: string): string {
     return `https://tatsuya0903.github.io/web-rtc-prac?apiKey=${apiKey}&theirPeerId=${theirPeerId}`
   }
+  static createCallUrl(apiKey: string, theirPeerId: string): string {
+    return `https://tatsuya0903.github.io/web-rtc-prac/${apiKey}/call/${theirPeerId}`
+  }
+  static createRoomUrl(apiKey: string, roomName: string): string {
+    return `https://tatsuya0903.github.io/web-rtc-prac/${apiKey}/rooms/${roomName}`
+  }
 
   static createRoomName(): string {
     const createCode = (len: number): string => {
