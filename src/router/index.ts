@@ -63,14 +63,12 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const apiKey = typeof to.query.apiKey === 'string' ? to.query.apiKey : null
-
-  const setting = LocalStorage.settings
+  const apiKey: string | null = to.params.apiKey ?? null
   if (apiKey !== null) {
+    const setting = LocalStorage.settings
     setting.apiKey = apiKey
+    LocalStorage.settings = setting
   }
-  LocalStorage.settings = setting
-
   next()
 })
 
