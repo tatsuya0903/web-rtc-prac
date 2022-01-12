@@ -53,18 +53,20 @@ type State = {
 }
 type Props = {
   apiKey: string
+  theirPeerId: string
 }
 export default defineComponent({
   components: { VideoPreview, PeerIdForm, CameraSelect, InputText },
   props: {
     apiKey: { type: String, required: true },
+    theirPeerId: { type: String, required: true },
   },
   setup(props: Props) {
     const { myPeerId, myMediaStream, theirPeerId, theirMediaStream, executeCall, executeClose } =
       useSkyWay({
         apiKey: props.apiKey,
         myPeerId: LocalStorage.myPeerId,
-        theirPeerId: LocalStorage.theirPeerId,
+        theirPeerId: props.theirPeerId,
         callbackOpened: () => {
           Snackbars.show('準備OK')
         },
@@ -86,12 +88,6 @@ export default defineComponent({
       () => myPeerId.value,
       (value: string | null) => {
         LocalStorage.myPeerId = value
-      },
-    )
-    watch(
-      () => theirPeerId.value,
-      (value: string | null) => {
-        LocalStorage.theirPeerId = value
       },
     )
 

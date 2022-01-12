@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-app-bar app color="primary" dark>
-      <v-toolbar-title>WebRTC サンプル</v-toolbar-title>
+      <v-toolbar-title>{{ title }}</v-toolbar-title>
       <v-spacer />
       <a style="color: white; opacity: 0.2" :href="commitUrl" target="_blank">
         {{ commitHash7 }}
@@ -24,8 +24,10 @@ export default defineComponent({
     const state = reactive<State>({})
     const commitHash7 = Env.commitHash?.substring(0, 7) ?? ''
     const commitUrl = Env.commitUrl
+    const title = process.env.VUE_APP_TITLE
     return {
       ...toRefs(state),
+      title,
       commitHash7,
       commitUrl,
     }

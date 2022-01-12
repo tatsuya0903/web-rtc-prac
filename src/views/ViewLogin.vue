@@ -1,9 +1,9 @@
 <template>
   <LayoutPage>
     <template v-slot:main>
-      <v-card max-width="480px">
+      <v-card max-width="480px" outlined style="margin: auto">
         <v-card-text>
-          <InputText v-model="apiKey" label="アクセスキー" />
+          <InputText v-model="apiKey" label="APIキー" />
         </v-card-text>
         <v-card-actions>
           <v-spacer />
@@ -29,7 +29,7 @@ export default defineComponent({
   components: { InputText, LayoutPage },
   setup() {
     const state = reactive<State>({
-      apiKey: LocalStorage.settings.apiKey ?? Env.skyWayApiKey ?? '',
+      apiKey: LocalStorage.settings.apiKey ?? '',
     })
 
     const clickDone = async () => {

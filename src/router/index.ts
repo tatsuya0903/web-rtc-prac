@@ -50,6 +50,10 @@ const routes: Array<RouteConfig> = [
       roomName: route.params.roomName ?? Common.createRoomName(),
     }),
   },
+  {
+    path: '*',
+    redirect: { name: RouteNames.Login },
+  },
 ]
 
 const router = new VueRouter({
@@ -60,21 +64,12 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const apiKey = typeof to.query.apiKey === 'string' ? to.query.apiKey : null
-  const theirPeerId = typeof to.query.theirPeerId === 'string' ? to.query.theirPeerId : null
 
   const setting = LocalStorage.settings
   if (apiKey !== null) {
     setting.apiKey = apiKey
   }
-  if (theirPeerId !== null) {
-    setting.theirPeerId = theirPeerId
-  }
   LocalStorage.settings = setting
-
-  if (to.name === RouteNames.Home && setting.apiKey === null) {
-    next(RouteLocations.toLogin())
-    return
-  }
 
   next()
 })
