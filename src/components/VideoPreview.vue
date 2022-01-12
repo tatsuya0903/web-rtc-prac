@@ -60,5 +60,11 @@ export default defineComponent({
   border-radius: 16px;
   overflow: hidden;
   background: black;
+  width: 100%;
+  height: 100%;
+
+  video {
+    object-fit: cover;
+  }
 }
 </style>

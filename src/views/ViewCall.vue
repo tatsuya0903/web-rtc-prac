@@ -13,14 +13,21 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 300px;
+            max-width: 300px;
             padding: 8px;
           "
         >
           <CameraSelect v-model="cameraDeviceId" />
         </div>
+        <v-btn icon @click="clickQr">
+          <v-icon>mdi-qrcode</v-icon>
+        </v-btn>
+        <v-spacer />
         <v-btn color="error" @click="executeClose">
           <v-icon>mdi-phone-hangup</v-icon>
+        </v-btn>
+        <v-btn color="teal" @click="executeCall">
+          <v-icon>mdi-phone</v-icon>
         </v-btn>
       </v-bottom-navigation>
     </template>
@@ -36,6 +43,7 @@ import { Snackbars } from '@/snackbars'
 import { Dialogs } from '@/dialogs'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
+import { Common } from '@/common'
 
 type State = {
   cameraDeviceId: string | null
@@ -62,7 +70,6 @@ export default defineComponent({
         theirPeerId: props.theirPeerId,
         callbackOpened: () => {
           Snackbars.show('準備OK')
-          executeCall()
         },
         callbackCalled: () => {
           Snackbars.show('通話開始')
@@ -97,12 +104,19 @@ export default defineComponent({
         }
       },
     )
-
+    const clickQr = async () => {
+      if (myPeerId.value) {
+        const shareUrl = Common.createCallUrl(props.apiKey, myPeerId.value)
+        await Dialogs.showShareUrl(shareUrl)
+      }
+    }
     return {
       ...toRefs(state),
       executeClose,
+      executeCall,
       myMediaStream,
       theirMediaStream,
+      clickQr,
     }
   },
 })
