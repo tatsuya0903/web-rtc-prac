@@ -55,9 +55,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .video-preview {
-  border: 1px lightgray solid;
   font-size: 0px;
-  border-radius: 16px;
   overflow: hidden;
   background: black;
   width: 100%;

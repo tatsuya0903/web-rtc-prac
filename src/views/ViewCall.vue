@@ -2,7 +2,18 @@
   <LayoutPage>
     <template v-slot:main>
       <VideoPreview :media-stream="theirMediaStream" />
-      <div style="position: absolute; right: 16px; bottom: 16px; max-width: 200px; width: 50vw">
+      <div
+        style="
+          position: absolute;
+          right: 16px;
+          bottom: 16px;
+          max-width: 200px;
+          width: 50vw;
+          border: 1px solid white;
+          border-radius: 16px;
+          overflow: hidden;
+        "
+      >
         <VideoPreview :media-stream="myMediaStream" />
       </div>
     </template>

@@ -1,27 +1,48 @@
 <template>
   <LayoutPage>
     <template v-slot:main>
-      <v-row>
-        <v-col cols="12">
-          <div>APIキー:{{ apiKey }}</div>
-          <div>ルーム名:{{ roomName }}</div>
-          <div>URL:{{ shareUrl }}</div>
-          <v-btn icon @click="clickQr(shareUrl)">
-            <v-icon>mdi-qrcode</v-icon>
-          </v-btn>
-        </v-col>
-        <v-col cols="12" class="debug-sky-way__item">
+      <template v-for="mediaStream in mediaStreams">
+        <VideoPreview :key="mediaStream.id" :media-stream="mediaStream" />
+      </template>
+      <div
+        style="
+          position: absolute;
+          right: 16px;
+          bottom: 16px;
+          max-width: 200px;
+          width: 50vw;
+          border: 1px solid white;
+          border-radius: 16px;
+          overflow: hidden;
+        "
+      >
+        <VideoPreview :media-stream="myMediaStream" />
+      </div>
+    </template>
+    <template v-slot:footer>
+      <v-bottom-navigation dark>
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            max-width: 300px;
+            padding: 8px;
+          "
+        >
           <CameraSelect v-model="cameraDeviceId" />
-        </v-col>
-        <v-col cols="12" class="debug-sky-way__item">
-          <template v-for="mediaStream in mediaStreams">
-            <VideoPreview :key="mediaStream.id" :media-stream="mediaStream" />
-          </template>
-          <div style="position: fixed; right: 16px; bottom: 16px; max-width: 200px; width: 50vw">
-            <VideoPreview :media-stream="myMediaStream" />
-          </div>
-        </v-col>
-      </v-row>
+        </div>
+        <v-btn icon @click="clickQr">
+          <v-icon>mdi-qrcode</v-icon>
+        </v-btn>
+        <v-spacer />
+        <div style="display: flex; justify-content: center; align-items: center; padding: 8px">
+          <span>{{ roomName }}</span>
+        </div>
+        <v-btn color="error" @click="executeClose">
+          <v-icon>mdi-phone-hangup</v-icon>
+        </v-btn>
+      </v-bottom-navigation>
     </template>
   </LayoutPage>
 </template>
@@ -99,16 +120,16 @@ export default defineComponent({
       }
     }
 
-    const shareUrl = Common.createRoomUrl(props.apiKey, props.roomName)
-    const clickQr = async (url: string) => {
-      await Dialogs.showShareUrl(url)
+    const clickQr = async () => {
+      const shareUrl = Common.createRoomUrl(props.apiKey, props.roomName)
+      await Dialogs.showShareUrl(shareUrl)
     }
     return {
       ...toRefs(state),
-      shareUrl,
       clickQr,
       myMediaStream,
       mediaStreams,
+      executeClose,
     }
   },
 })
