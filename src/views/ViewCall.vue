@@ -1,7 +1,7 @@
 <template>
   <LayoutPage>
     <template v-slot:main>
-      <VideoPreview :media-stream="theirMediaStream" />
+      <VideoPreview :media-stream="yourMediaStream" />
       <div
         style="
           position: absolute;
@@ -28,17 +28,11 @@
             padding: 8px;
           "
         >
-          <CameraSelect v-model="cameraDeviceId" />
+          <CameraSelect v-model="localCameraDeviceId" />
         </div>
-        <v-btn icon @click="clickQr">
-          <v-icon>mdi-qrcode</v-icon>
-        </v-btn>
         <v-spacer />
-        <v-btn color="error" @click="executeClose">
+        <v-btn color="error" @click="close">
           <v-icon>mdi-phone-hangup</v-icon>
-        </v-btn>
-        <v-btn color="teal" @click="executeCall">
-          <v-icon>mdi-phone</v-icon>
         </v-btn>
       </v-bottom-navigation>
     </template>
@@ -46,19 +40,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
+import { computed, defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
 import LayoutPage from '@/components/LayoutPage.vue'
-import { useSkyWay } from '@/composables/useSkyWay'
-import { LocalStorage } from '@/localStorage'
-import { Snackbars } from '@/snackbars'
-import { Dialogs } from '@/dialogs'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
-import { Common } from '@/common'
+import { usePeer } from '@/composables/usePeer'
+import { MediaConnection } from 'skyway-js'
+import { RouterHelper } from '@/router-helper/RouterHelper'
 
-type State = {
-  cameraDeviceId: string | null
-}
+type State = {}
 type Props = {
   apiKey: string
   theirPeerId: string
@@ -70,64 +60,37 @@ export default defineComponent({
     theirPeerId: { type: String, required: true },
   },
   setup(props: Props) {
-    const state = reactive<State>({
-      cameraDeviceId: null,
+    const { close, changeCamera, myMediaStream, yourMediaStream, cameraDeviceId, mediaConnection } =
+      usePeer()
+
+    const state = reactive<State>({})
+
+    const localCameraDeviceId = computed({
+      get: () => cameraDeviceId.value,
+      set: (value: string | null) => {
+        if (value !== null) {
+          changeCamera({ deviceId: value })
+        }
+      },
     })
 
-    const { myPeerId, myMediaStream, theirPeerId, theirMediaStream, executeCall, executeClose } =
-      useSkyWay({
-        apiKey: props.apiKey,
-        myPeerId: LocalStorage.myPeerId,
-        theirPeerId: props.theirPeerId,
-        callbackOpened: () => {
-          Snackbars.show('準備OK')
-        },
-        callbackCalled: () => {
-          Snackbars.show('通話開始')
-        },
-        callbackClosed: () => {
-          Snackbars.show('通話が終了しました')
-        },
-        callbackError: (message: string) => {
-          Dialogs.showError(message)
-        },
-      })
-
-    const changeCamera = async (cameraDeviceId: string) => {
-      try {
-        myMediaStream.value = await navigator.mediaDevices.getUserMedia({
-          video: {
-            deviceId: cameraDeviceId,
-          },
-          audio: false,
-        })
-      } catch (e) {
-        // 失敗時にはエラーログを出力
-        console.error('mediaDevice.getUserMedia() error:', e.message)
-        return
-      }
-    }
     watch(
-      () => state.cameraDeviceId,
-      (value: string | null) => {
-        if (value !== null) {
-          changeCamera(value)
+      () => mediaConnection.value,
+      (value: MediaConnection | null) => {
+        if (value === null) {
+          alert('切断されました')
+          RouterHelper.moveTop(props.apiKey)
         }
       },
     )
-    const clickQr = async () => {
-      if (myPeerId.value) {
-        const shareUrl = Common.createCallUrl(props.apiKey, myPeerId.value)
-        await Dialogs.showShareUrl(shareUrl)
-      }
-    }
+
     return {
       ...toRefs(state),
-      executeClose,
-      executeCall,
       myMediaStream,
-      theirMediaStream,
-      clickQr,
+      yourMediaStream,
+      close,
+      cameraDeviceId,
+      localCameraDeviceId,
     }
   },
 })

@@ -1,7 +1,13 @@
 import Vue from 'vue'
 import DialogShareUrl from '@/components/DialogShareUrl.vue'
 import DialogError from '@/components/DialogError.vue'
+import DialogCalled from '@/components/DialogCalled.vue'
 
+export const DoneCancels = {
+  Done: 'Done',
+  Cancel: 'Cancel',
+} as const
+export type DoneCancel = typeof DoneCancels[keyof typeof DoneCancels]
 export class Dialogs {
   static async showError(message: string): Promise<void> {
     return new Promise<void>((resolve) => {
@@ -14,6 +20,26 @@ export class Dialogs {
           message: message,
           callbackClosed: () => {
             resolve()
+            setTimeout(() => {
+              this.removeElement(vm)
+            }, 100)
+          },
+        },
+      })
+      this.attachElement(vm)
+    })
+  }
+  static async showCalled(message: string): Promise<DoneCancel> {
+    return new Promise<DoneCancel>((resolve) => {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const DialogVue = Vue.extend(DialogCalled)
+      const vm = new DialogVue({
+        parent: this.parent,
+        propsData: {
+          message: message,
+          callbackClosed: (doneCancel: DoneCancel) => {
+            resolve(doneCancel)
             setTimeout(() => {
               this.removeElement(vm)
             }, 100)

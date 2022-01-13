@@ -14,8 +14,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from '@vue/composition-api'
+import {
+  defineComponent,
+  onBeforeMount,
+  onBeforeUnmount,
+  reactive,
+  toRefs,
+} from '@vue/composition-api'
 import { Env } from '@/env'
+import { usePeer } from '@/composables/usePeer'
 
 type State = {}
 export default defineComponent({
@@ -25,6 +32,7 @@ export default defineComponent({
     const commitHash7 = Env.commitHash?.substring(0, 7) ?? ''
     const commitUrl = Env.commitUrl
     const title = process.env.VUE_APP_TITLE
+
     return {
       ...toRefs(state),
       title,
