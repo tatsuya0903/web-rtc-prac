@@ -1,7 +1,7 @@
 import store from '@/store'
 import { computed } from '@vue/composition-api'
 import Peer, { MediaConnection, PeerError } from 'skyway-js'
-import { PayloadCall, PayloadChangeCamera, PayloadInit } from '@/store/modules/peer'
+import { PayloadCall, PayloadChangeCamera, PayloadInit, State } from '@/store/modules/peer'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const usePeer = () => {
@@ -20,6 +20,9 @@ export const usePeer = () => {
   const call = async (payload: PayloadCall): Promise<boolean> => {
     return store.dispatch('peer/call', payload)
   }
+  const send = async (text: string): Promise<boolean> => {
+    return store.dispatch('peer/send', text)
+  }
   const close = async (): Promise<boolean> => {
     return store.dispatch('peer/close')
   }
@@ -30,6 +33,7 @@ export const usePeer = () => {
     peer,
     init,
     call,
+    send,
     close,
     changeCamera,
     peerId,

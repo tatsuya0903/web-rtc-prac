@@ -1,12 +1,15 @@
-import Peer, { MediaConnection, PeerConstructorOption, PeerError } from 'skyway-js'
-import { ActionTree, GetterTree, Module, MutationTree } from 'vuex'
+import Peer, { DataConnection, MediaConnection, PeerConstructorOption, PeerError } from 'skyway-js'
+import { ActionTree, Commit, GetterTree, Module, MutationTree } from 'vuex'
 import { RootState } from '@/store'
-import isRaw from '@vue/composition-api'
 import { Dialogs, DoneCancels } from '@/dialogs'
+import Data from '@vue/composition-api'
+import SnackbarDefault from '@/components/SnackbarDefault.vue'
+import { Snackbars } from '@/snackbars'
 
 export interface State {
   data: Peer | null
   mediaConnection: MediaConnection | null
+  dataConnection: DataConnection | null
   myMediaStream: MediaStream | null
   yourMediaStream: MediaStream | null
   cameraDeviceId: string | null
@@ -24,6 +27,7 @@ export type PayloadChangeCamera = {
 const state: State = {
   data: null,
   mediaConnection: null,
+  dataConnection: null,
   myMediaStream: null,
   yourMediaStream: null,
   cameraDeviceId: null,
@@ -46,8 +50,25 @@ const getters: GetterTree<State, RootState> = {
     return state.cameraDeviceId
   },
 }
+
 const actions: ActionTree<State, RootState> = {
   async init({ commit, state }, payload: PayloadInit): Promise<PeerError | null> {
+    // DataConnectionの設定
+    const setDataConnection = (dataConnection: DataConnection) => {
+      dataConnection.on('open', () => {
+        Snackbars.todo('DataConnection >> open!!!')
+      })
+      dataConnection.on('data', (data) => {
+        Snackbars.todo(`DataConnection >> data: ${JSON.stringify(data, null, '  ')}`)
+      })
+      dataConnection.on('close', () => {
+        Snackbars.todo('DataConnection >> close!!!')
+      })
+      dataConnection.on('error', () => {
+        Snackbars.todo('DataConnection >> error!!!')
+      })
+    }
+
     return new Promise<PeerError | null>((resolve) => {
       const peerId = payload.peerId
       const options: PeerConstructorOption = {
@@ -55,18 +76,21 @@ const actions: ActionTree<State, RootState> = {
         debug: 3,
       }
       const peer = peerId === null ? new Peer(options) : new Peer(peerId, options)
-      peer.once('open', () => {
+      peer.on('open', () => {
         commit('data', peer)
         resolve(null)
       })
-      peer.once('error', (err: PeerError) => {
+      peer.on('error', (err: PeerError) => {
         resolve(err)
       })
 
       peer.on('call', async (mediaConnection: MediaConnection) => {
-        const result = await Dialogs.showCalled(`[${mediaConnection.remoteId}]から着信です`)
+        const peerId = mediaConnection.remoteId
+        const result = await Dialogs.showCalled(`[${peerId}]から着信です`)
         if (result === DoneCancels.Done) {
           // 受話
+
+          // メディアコネクションを確立
           mediaConnection.answer(state.myMediaStream ?? undefined)
           mediaConnection.on('stream', (stream) => {
             state.yourMediaStream = stream
@@ -78,11 +102,22 @@ const actions: ActionTree<State, RootState> = {
               commit('mediaConnection', null)
             }
           })
+
+          // データコネクションを確立
+          const dataConnection = peer.connect(peerId)
+          setDataConnection(dataConnection)
+
           commit('mediaConnection', mediaConnection)
+          commit('dataConnection', dataConnection)
         } else {
           // 拒否
           mediaConnection.close(true)
         }
+      })
+
+      peer.on('connection', (dataConnection: DataConnection) => {
+        setDataConnection(dataConnection)
+        commit('dataConnection', dataConnection)
       })
     })
   },
@@ -99,7 +134,18 @@ const actions: ActionTree<State, RootState> = {
     mediaConnection.on('close', () => {
       alert('切断されました')
     })
+
     commit('mediaConnection', mediaConnection)
+    return true
+  },
+  async send({ state }, text: string): Promise<boolean> {
+    const dataConnection = state.dataConnection
+    if (dataConnection === null) {
+      await Snackbars.todo('送信エラー')
+      return false
+    }
+
+    dataConnection.send(text)
     return true
   },
   async close({ state, commit }): Promise<boolean> {
@@ -138,6 +184,9 @@ const mutations: MutationTree<State> = {
   },
   mediaConnection(state: State, value: MediaConnection | null) {
     state.mediaConnection = value
+  },
+  dataConnection(state: State, value: DataConnection | null) {
+    state.dataConnection = value
   },
   myMediaStream(state: State, value: MediaStream | null) {
     state.myMediaStream = value

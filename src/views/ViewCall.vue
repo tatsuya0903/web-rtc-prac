@@ -1,6 +1,7 @@
 <template>
   <LayoutPage>
     <template v-slot:main>
+      <MessageForm />
       <VideoPreview :media-stream="yourMediaStream" />
       <div
         style="
@@ -47,6 +48,8 @@ import VideoPreview from '@/components/VideoPreview.vue'
 import { usePeer } from '@/composables/usePeer'
 import { MediaConnection } from 'skyway-js'
 import { RouterHelper } from '@/router-helper/RouterHelper'
+import InputText from '@/components/InputText.vue'
+import MessageForm from '@/components/MessageForm.vue'
 
 type State = {}
 type Props = {
@@ -54,7 +57,7 @@ type Props = {
   theirPeerId: string
 }
 export default defineComponent({
-  components: { VideoPreview, CameraSelect, LayoutPage },
+  components: { MessageForm, InputText, VideoPreview, CameraSelect, LayoutPage },
   props: {
     apiKey: { type: String, required: true },
     theirPeerId: { type: String, required: true },
