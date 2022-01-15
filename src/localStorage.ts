@@ -30,6 +30,14 @@ export class LocalStorage {
     settings.myPeerId = value
     this.settings = settings
   }
+  static get yourPeerId(): string | null {
+    return this.settings.yourPeerId
+  }
+  static set yourPeerId(value: string | null) {
+    const settings = this.settings
+    settings.yourPeerId = value
+    this.settings = settings
+  }
 
   private static save<T>(key: Key, data: T) {
     const json = JSON.stringify(data)

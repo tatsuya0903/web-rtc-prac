@@ -80,7 +80,7 @@ export default defineComponent({
     const { init, call, changeCamera, peer, peerId, myMediaStream, yourPeerId } = usePeer()
 
     const state = reactive<State>({
-      theirPeerId: '',
+      theirPeerId: LocalStorage.yourPeerId ?? '',
       roomName: '',
       cameraDeviceId: null,
     })
@@ -91,6 +91,12 @@ export default defineComponent({
         if (peer === null) {
           return
         }
+      },
+    )
+    watch(
+      () => state.theirPeerId,
+      (value: string) => {
+        LocalStorage.yourPeerId = value.length > 0 ? value : null
       },
     )
 
