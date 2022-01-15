@@ -8,7 +8,7 @@
       </a>
     </v-app-bar>
     <v-main>
-      <router-view />
+      <router-view :peer="peer" />
     </v-main>
   </v-app>
 </template>
@@ -28,6 +28,7 @@ type State = {}
 export default defineComponent({
   components: {},
   setup() {
+    const { peer } = usePeer()
     const state = reactive<State>({})
     const commitHash7 = Env.commitHash?.substring(0, 7) ?? ''
     const commitUrl = Env.commitUrl
@@ -38,6 +39,7 @@ export default defineComponent({
       title,
       commitHash7,
       commitUrl,
+      peer,
     }
   },
 })

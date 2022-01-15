@@ -57,6 +57,8 @@ import { useRoom } from '@/composables/useRoom'
 import { Common } from '@/common'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
+import { usePeer } from '@/composables/usePeer'
+import Peer from 'skyway-js'
 
 type State = {
   cameraDeviceId: string | null
@@ -64,34 +66,23 @@ type State = {
 type Props = {
   apiKey: string
   roomName: string
+  peer: Peer
 }
 export default defineComponent({
   components: { VideoPreview, CameraSelect, LayoutPage },
   props: {
     apiKey: { type: String, required: true },
     roomName: { type: String, required: true },
+    peer: { type: Peer, required: true },
   },
   setup(props: Props) {
     const state = reactive<State>({
       cameraDeviceId: null,
     })
 
-    const { myPeerId, myMediaStream, mediaStreams, executeClose } = useRoom({
-      apiKey: props.apiKey,
-      myPeerId: LocalStorage.myPeerId,
+    const { myMediaStream, mediaStreams, executeClose } = useRoom({
+      peer: props.peer,
       roomName: props.roomName,
-      callbackOpened: () => {
-        Snackbars.show('準備OK')
-      },
-      callbackCalled: () => {
-        Snackbars.show('通話開始')
-      },
-      callbackClosed: () => {
-        Snackbars.show('通話が終了しました')
-      },
-      callbackError: (message: string) => {
-        Dialogs.showError(message)
-      },
     })
 
     watch(
