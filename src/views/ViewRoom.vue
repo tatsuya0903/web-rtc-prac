@@ -80,9 +80,11 @@ export default defineComponent({
       cameraDeviceId: null,
     })
 
-    const { myMediaStream, mediaStreams, executeClose } = useRoom({
+    const { myMediaStream } = usePeer()
+    const { mediaStreams, executeClose } = useRoom({
       peer: props.peer,
       roomName: props.roomName,
+      stream: myMediaStream.value,
     })
 
     watch(
@@ -94,21 +96,7 @@ export default defineComponent({
       },
     )
     const changeCamera = async (cameraDeviceId: string) => {
-      try {
-        const mediaStream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            deviceId: cameraDeviceId,
-          },
-          audio: false,
-        })
-
-        // 着信時に相手にカメラ映像を返せるように、グローバル変数に保存しておく
-        myMediaStream.value = mediaStream
-      } catch (e) {
-        // 失敗時にはエラーログを出力
-        console.error('mediaDevice.getUserMedia() error:', e.message)
-        return
-      }
+      await Snackbars.todo(`TODO: changeCamera(${cameraDeviceId})`)
     }
 
     const clickQr = async () => {
