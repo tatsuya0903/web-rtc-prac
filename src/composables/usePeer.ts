@@ -7,12 +7,10 @@ import { PayloadCall, PayloadChangeCamera, PayloadInit, State } from '@/store/mo
 export const usePeer = () => {
   const peer = computed<Peer | null>(() => store.getters['peer/data'])
   const peerId = computed<string | null>(() => peer.value?.id ?? null)
-  const myMediaStream = computed<MediaStream | null>(() => store.getters['peer/myMediaStream'])
   const yourMediaStream = computed<MediaStream | null>(() => store.getters['peer/yourMediaStream'])
   const mediaConnection = computed<MediaConnection | null>(
     () => store.getters['peer/mediaConnection'],
   )
-  const cameraDeviceId = computed<string | null>(() => store.getters['peer/cameraDeviceId'])
   const yourPeerId = computed(() => mediaConnection.value?.remoteId ?? null)
   const init = async (payload: PayloadInit): Promise<PeerError | null> => {
     return store.dispatch('peer/init', payload)
@@ -26,21 +24,15 @@ export const usePeer = () => {
   const close = async (): Promise<boolean> => {
     return store.dispatch('peer/close')
   }
-  const changeCamera = async (payload: PayloadChangeCamera): Promise<boolean> => {
-    return store.dispatch('peer/changeCamera', payload)
-  }
   return {
     peer,
     init,
     call,
     send,
     close,
-    changeCamera,
     peerId,
-    myMediaStream,
     yourMediaStream,
     yourPeerId,
     mediaConnection,
-    cameraDeviceId,
   }
 }

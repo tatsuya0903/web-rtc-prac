@@ -1,5 +1,5 @@
 import { onBeforeUnmount, ref, watch } from '@vue/composition-api'
-import Peer, { MediaConnection } from 'skyway-js'
+import Peer from 'skyway-js'
 
 export interface Payload {
   peer: Peer
@@ -11,7 +11,6 @@ export interface Payload {
 export const useRoom = (payload: Payload) => {
   const myMediaStream = ref<MediaStream | null>(null)
   const mediaStreams = ref<MediaStream[]>([])
-  const localMediaConnection = ref<MediaConnection | null>(null)
 
   const peer = payload.peer
   const room = peer.joinRoom(payload.roomName, {

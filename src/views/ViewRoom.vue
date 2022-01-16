@@ -30,16 +30,7 @@ export default defineComponent({
   setup(props: Props) {
     const state = reactive<State>({})
 
-    const { peer, init } = usePeer()
-
-    onMounted(() => {
-      if (peer.value === null) {
-        init({
-          apiKey: props.apiKey,
-          peerId: LocalStorage.apiKey,
-        })
-      }
-    })
+    const { peer } = usePeer()
 
     return {
       ...toRefs(state),

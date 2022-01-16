@@ -15,27 +15,17 @@
           overflow: hidden;
         "
       >
-        <VideoPreview :media-stream="myMediaStream" />
+        <VideoPreview :media-stream="mediaStream" />
       </div>
     </template>
     <template v-slot:footer>
-      <v-bottom-navigation dark>
-        <div
-          style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            max-width: 300px;
-            padding: 8px;
-          "
-        >
-          <CameraSelect v-model="localCameraDeviceId" />
-        </div>
+      <v-toolbar dark>
+        <CameraChangeButton />
         <v-spacer />
-        <v-btn color="error" @click="close">
+        <v-btn rounded color="error" @click="close">
           <v-icon>mdi-phone-hangup</v-icon>
         </v-btn>
-      </v-bottom-navigation>
+      </v-toolbar>
     </template>
   </LayoutPage>
 </template>
@@ -50,6 +40,8 @@ import { MediaConnection } from 'skyway-js'
 import { RouterHelper } from '@/router-helper/RouterHelper'
 import InputText from '@/components/InputText.vue'
 import MessageForm from '@/components/MessageForm.vue'
+import { useCamera } from '@/composables/useCamera'
+import CameraChangeButton from '@/components/CameraChangeButton.vue'
 
 type State = {}
 type Props = {
@@ -57,26 +49,23 @@ type Props = {
   theirPeerId: string
 }
 export default defineComponent({
-  components: { MessageForm, InputText, VideoPreview, CameraSelect, LayoutPage },
+  components: {
+    CameraChangeButton,
+    MessageForm,
+    InputText,
+    VideoPreview,
+    CameraSelect,
+    LayoutPage,
+  },
   props: {
     apiKey: { type: String, required: true },
     theirPeerId: { type: String, required: true },
   },
   setup(props: Props) {
-    const { close, changeCamera, myMediaStream, yourMediaStream, cameraDeviceId, mediaConnection } =
-      usePeer()
+    const { mediaStream } = useCamera()
+    const { close, yourMediaStream, mediaConnection } = usePeer()
 
     const state = reactive<State>({})
-
-    const localCameraDeviceId = computed({
-      get: () => cameraDeviceId.value,
-      set: (value: string | null) => {
-        if (value !== null) {
-          changeCamera({ deviceId: value })
-        }
-      },
-    })
-
     watch(
       () => mediaConnection.value,
       (value: MediaConnection | null) => {
@@ -89,11 +78,9 @@ export default defineComponent({
 
     return {
       ...toRefs(state),
-      myMediaStream,
+      mediaStream,
       yourMediaStream,
       close,
-      cameraDeviceId,
-      localCameraDeviceId,
     }
   },
 })

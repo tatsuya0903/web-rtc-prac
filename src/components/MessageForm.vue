@@ -22,13 +22,13 @@ type State = {
 export default defineComponent({
   components: { InputText },
   setup() {
-    const peer = usePeer()
+    const { send } = usePeer()
 
     const state = reactive<State>({
       message: '',
     })
     const clickSend = async () => {
-      const success = await peer.send(state.message)
+      const success = await send(state.message)
       if (success) {
         state.message = ''
         await Snackbars.show('送信しました')

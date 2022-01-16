@@ -30,9 +30,11 @@
           </v-col>
           <v-col cols="12" md="4">
             <v-card>
-              <VideoPreview :media-stream="myMediaStream" />
+              <VideoPreview :media-stream="mediaStream" />
               <v-card-actions>
-                <CameraSelect v-model="cameraDeviceId" />
+                <v-spacer />
+                <CameraChangeButton />
+                <v-spacer />
               </v-card-actions>
             </v-card>
           </v-col>
@@ -66,27 +68,28 @@ import Peer from 'skyway-js'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
 import AppBar from '@/components/AppBar.vue'
+import { useCamera } from '@/composables/useCamera'
+import CameraChangeButton from '@/components/CameraChangeButton.vue'
 
 type State = {
   theirPeerId: string
   roomName: string
-  cameraDeviceId: string | null
 }
 type Props = {
   apiKey: string
 }
 export default defineComponent({
-  components: { AppBar, VideoPreview, CameraSelect, InputText, LayoutPage },
+  components: { CameraChangeButton, AppBar, VideoPreview, CameraSelect, InputText, LayoutPage },
   props: {
     apiKey: { type: String, required: true },
   },
   setup(props: Props) {
-    const { init, call, changeCamera, peer, peerId, myMediaStream, yourPeerId } = usePeer()
+    const { call, peer, peerId, yourPeerId } = usePeer()
+    const { mediaStream } = useCamera()
 
     const state = reactive<State>({
       theirPeerId: LocalStorage.yourPeerId ?? '',
       roomName: LocalStorage.roomName ?? '',
-      cameraDeviceId: '',
     })
 
     watch(
@@ -116,7 +119,7 @@ export default defineComponent({
         return
       }
 
-      const success = await call({ peerId: state.theirPeerId })
+      const success = await call({ peerId: state.theirPeerId, mediaStream: mediaStream.value })
       if (success) {
         alert('OK')
       } else {
@@ -132,10 +135,6 @@ export default defineComponent({
       await RouterHelper.moveRoom(props.apiKey, state.roomName)
     }
 
-    onBeforeMount(() => {
-      init({ apiKey: props.apiKey, peerId: LocalStorage.myPeerId })
-    })
-
     const clickQr = async () => {
       if (peerId.value === null) {
         return null
@@ -143,15 +142,6 @@ export default defineComponent({
       const url = Common.createCallUrl(props.apiKey, peerId.value)
       await Dialogs.showShareUrl(url)
     }
-
-    watch(
-      () => state.cameraDeviceId,
-      (value: string | null) => {
-        if (value !== null) {
-          changeCamera({ deviceId: value })
-        }
-      },
-    )
 
     watch(
       () => yourPeerId.value,
@@ -167,7 +157,7 @@ export default defineComponent({
       clickRoom,
       peerId,
       clickQr,
-      myMediaStream,
+      mediaStream,
     }
   },
 })

@@ -1,25 +1,23 @@
 import Peer, { DataConnection, MediaConnection, PeerConstructorOption, PeerError } from 'skyway-js'
-import { ActionTree, Commit, GetterTree, Module, MutationTree } from 'vuex'
+import { ActionTree, GetterTree, Module, MutationTree } from 'vuex'
 import { RootState } from '@/store'
 import { Dialogs, DoneCancels } from '@/dialogs'
-import Data from '@vue/composition-api'
-import SnackbarDefault from '@/components/SnackbarDefault.vue'
 import { Snackbars } from '@/snackbars'
 
 export interface State {
   data: Peer | null
   mediaConnection: MediaConnection | null
   dataConnection: DataConnection | null
-  myMediaStream: MediaStream | null
   yourMediaStream: MediaStream | null
-  cameraDeviceId: string | null
 }
 export type PayloadInit = {
   apiKey: string
   peerId: string | null
+  mediaStream: MediaStream | null
 }
 export type PayloadCall = {
   peerId: string
+  mediaStream: MediaStream | null
 }
 export type PayloadChangeCamera = {
   deviceId: string
@@ -28,26 +26,18 @@ const state: State = {
   data: null,
   mediaConnection: null,
   dataConnection: null,
-  myMediaStream: null,
   yourMediaStream: null,
-  cameraDeviceId: null,
 }
 
 const getters: GetterTree<State, RootState> = {
   data: (state: State): Peer | null => {
     return state.data
   },
-  myMediaStream: (state: State): MediaStream | null => {
-    return state.myMediaStream
-  },
   yourMediaStream: (state: State): MediaStream | null => {
     return state.yourMediaStream
   },
   mediaConnection: (state: State): MediaConnection | null => {
     return state.mediaConnection
-  },
-  cameraDeviceId: (state: State): string | null => {
-    return state.cameraDeviceId
   },
 }
 
@@ -68,9 +58,6 @@ const actions: ActionTree<State, RootState> = {
         Snackbars.todo('DataConnection >> error!!!')
       })
     }
-
-    const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
-    commit('myMediaStream', mediaStream)
 
     return new Promise<PeerError | null>((resolve) => {
       const peerId = payload.peerId
@@ -94,7 +81,7 @@ const actions: ActionTree<State, RootState> = {
           // 受話
 
           // メディアコネクションを確立
-          mediaConnection.answer(state.myMediaStream ?? undefined)
+          mediaConnection.answer(payload.mediaStream ?? undefined)
           mediaConnection.on('stream', (stream) => {
             state.yourMediaStream = stream
           })
@@ -130,7 +117,7 @@ const actions: ActionTree<State, RootState> = {
       return false
     }
 
-    const mediaConnection = peer.call(payload.peerId, state.myMediaStream ?? undefined)
+    const mediaConnection = peer.call(payload.peerId, payload.mediaStream ?? undefined)
     mediaConnection.on('stream', (stream) => {
       commit('yourMediaStream', stream)
     })
@@ -162,23 +149,6 @@ const actions: ActionTree<State, RootState> = {
     commit('mediaConnection', null)
     return true
   },
-  async changeCamera({ commit }, payload: PayloadChangeCamera): Promise<boolean> {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          deviceId: payload.deviceId,
-        },
-        audio: false,
-      })
-      commit('cameraDeviceId', payload.deviceId)
-      commit('myMediaStream', mediaStream)
-      return true
-    } catch (e) {
-      // 失敗時にはエラーログを出力
-      console.error('mediaDevice.getUserMedia() error:', e.message)
-      return false
-    }
-  },
 }
 
 const mutations: MutationTree<State> = {
@@ -191,14 +161,8 @@ const mutations: MutationTree<State> = {
   dataConnection(state: State, value: DataConnection | null) {
     state.dataConnection = value
   },
-  myMediaStream(state: State, value: MediaStream | null) {
-    state.myMediaStream = value
-  },
   yourMediaStream(state: State, value: MediaStream | null) {
     state.yourMediaStream = value
-  },
-  cameraDeviceId(state: State, value: string | null) {
-    state.cameraDeviceId = value
   },
 }
 
