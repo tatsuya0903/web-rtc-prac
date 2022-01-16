@@ -1,5 +1,8 @@
 <template>
   <LayoutPage>
+    <template v-slot:header>
+      <AppBar />
+    </template>
     <template v-slot:main>
       <v-container>
         <v-row>
@@ -62,6 +65,7 @@ import { LocalStorage } from '@/localStorage'
 import Peer from 'skyway-js'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
+import AppBar from '@/components/AppBar.vue'
 
 type State = {
   theirPeerId: string
@@ -72,7 +76,7 @@ type Props = {
   apiKey: string
 }
 export default defineComponent({
-  components: { VideoPreview, CameraSelect, InputText, LayoutPage },
+  components: { AppBar, VideoPreview, CameraSelect, InputText, LayoutPage },
   props: {
     apiKey: { type: String, required: true },
   },
@@ -81,8 +85,8 @@ export default defineComponent({
 
     const state = reactive<State>({
       theirPeerId: LocalStorage.yourPeerId ?? '',
-      roomName: '',
-      cameraDeviceId: LocalStorage.roomName ?? '',
+      roomName: LocalStorage.roomName ?? '',
+      cameraDeviceId: '',
     })
 
     watch(

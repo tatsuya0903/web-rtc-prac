@@ -1,6 +1,6 @@
 <template>
   <div class="video-preview">
-    <video ref="video" width="100%" autoplay muted playsinline />
+    <video ref="video" width="100%" height="100%" autoplay muted playsinline />
   </div>
 </template>
 

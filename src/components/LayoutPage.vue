@@ -1,5 +1,8 @@
 <template>
   <div class="layout-page">
+    <div class="layout-page__header">
+      <slot name="header" />
+    </div>
     <div class="layout-page__main">
       <slot name="main" />
     </div>
@@ -27,14 +30,14 @@ export default defineComponent({
 <style lang="scss" scoped>
 .layout-page {
   position: fixed;
-  top: 64px;
   width: 100%;
-  height: calc(100% - 64px);
-  max-height: calc(100% - 64px);
+  height: 100%;
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 
+  .layout-page__header {
+  }
   .layout-page__main {
     position: relative;
     flex: 1;

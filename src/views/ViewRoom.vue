@@ -1,114 +1,49 @@
 <template>
   <LayoutPage>
     <template v-slot:main>
-      <template v-for="mediaStream in mediaStreams">
-        <VideoPreview :key="mediaStream.id" :media-stream="mediaStream" />
-      </template>
-      <div
-        style="
-          position: absolute;
-          right: 16px;
-          bottom: 16px;
-          max-width: 200px;
-          width: 50vw;
-          border: 1px solid white;
-          border-radius: 16px;
-          overflow: hidden;
-        "
-      >
-        <VideoPreview :media-stream="myMediaStream" />
-      </div>
-    </template>
-    <template v-slot:footer>
-      <v-bottom-navigation dark>
-        <div
-          style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            max-width: 300px;
-            padding: 8px;
-          "
-        >
-          <CameraSelect v-model="cameraDeviceId" />
-        </div>
-        <v-btn icon @click="clickQr">
-          <v-icon>mdi-qrcode</v-icon>
-        </v-btn>
-        <v-spacer />
-        <div style="display: flex; justify-content: center; align-items: center; padding: 8px">
-          <span>{{ roomName }}</span>
-        </div>
-        <v-btn color="error" @click="executeClose">
-          <v-icon>mdi-phone-hangup</v-icon>
-        </v-btn>
-      </v-bottom-navigation>
+      <div v-if="peer === null">Peer is null</div>
+      <Room v-else :api-key="apiKey" :peer="peer" :room-name="roomName" />
     </template>
   </LayoutPage>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
+import { defineComponent, onMounted, reactive, toRefs } from '@vue/composition-api'
 import LayoutPage from '@/components/LayoutPage.vue'
-import { LocalStorage } from '@/localStorage'
-import { Snackbars } from '@/snackbars'
-import { Dialogs } from '@/dialogs'
-import { useRoom } from '@/composables/useRoom'
-import { Common } from '@/common'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
 import { usePeer } from '@/composables/usePeer'
-import Peer from 'skyway-js'
+import Room from '@/components/Room.vue'
+import { LocalStorage } from '@/localStorage'
 
-type State = {
-  cameraDeviceId: string | null
-}
+type State = {}
 type Props = {
   apiKey: string
   roomName: string
-  peer: Peer
 }
 export default defineComponent({
-  components: { VideoPreview, CameraSelect, LayoutPage },
+  components: { Room, VideoPreview, CameraSelect, LayoutPage },
   props: {
     apiKey: { type: String, required: true },
     roomName: { type: String, required: true },
-    peer: { type: Peer, required: true },
   },
   setup(props: Props) {
-    const state = reactive<State>({
-      cameraDeviceId: null,
+    const state = reactive<State>({})
+
+    const { peer, init } = usePeer()
+
+    onMounted(() => {
+      if (peer.value === null) {
+        init({
+          apiKey: props.apiKey,
+          peerId: LocalStorage.apiKey,
+        })
+      }
     })
 
-    const { myMediaStream } = usePeer()
-    const { mediaStreams, executeClose } = useRoom({
-      peer: props.peer,
-      roomName: props.roomName,
-      stream: myMediaStream.value,
-    })
-
-    watch(
-      () => state.cameraDeviceId,
-      (value: string | null) => {
-        if (value !== null) {
-          changeCamera(value)
-        }
-      },
-    )
-    const changeCamera = async (cameraDeviceId: string) => {
-      await Snackbars.todo(`TODO: changeCamera(${cameraDeviceId})`)
-    }
-
-    const clickQr = async () => {
-      const shareUrl = Common.createRoomUrl(props.apiKey, props.roomName)
-      await Dialogs.showShareUrl(shareUrl)
-    }
     return {
       ...toRefs(state),
-      clickQr,
-      myMediaStream,
-      mediaStreams,
-      executeClose,
+      peer,
     }
   },
 })

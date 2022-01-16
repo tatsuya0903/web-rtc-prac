@@ -69,6 +69,9 @@ const actions: ActionTree<State, RootState> = {
       })
     }
 
+    const mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    commit('myMediaStream', mediaStream)
+
     return new Promise<PeerError | null>((resolve) => {
       const peerId = payload.peerId
       const options: PeerConstructorOption = {

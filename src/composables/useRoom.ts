@@ -1,6 +1,5 @@
 import { onBeforeUnmount, ref, watch } from '@vue/composition-api'
 import Peer, { MediaConnection } from 'skyway-js'
-import * as stream from 'stream'
 
 export interface Payload {
   peer: Peer
@@ -55,11 +54,11 @@ export const useRoom = (payload: Payload) => {
   )
 
   const executeClose = (): void => {
-    localMediaConnection.value?.close(true)
+    room.close()
   }
 
   onBeforeUnmount(() => {
-    localMediaConnection.value?.close(true)
+    room.close()
     peer.destroy()
   })
 
