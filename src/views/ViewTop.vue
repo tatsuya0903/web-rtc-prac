@@ -82,7 +82,7 @@ export default defineComponent({
     const state = reactive<State>({
       theirPeerId: LocalStorage.yourPeerId ?? '',
       roomName: '',
-      cameraDeviceId: null,
+      cameraDeviceId: LocalStorage.roomName ?? '',
     })
 
     watch(
