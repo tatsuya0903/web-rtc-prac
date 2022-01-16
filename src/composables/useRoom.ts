@@ -1,5 +1,6 @@
-import { onBeforeUnmount, ref, watch } from '@vue/composition-api'
+import { onBeforeUnmount, ref } from '@vue/composition-api'
 import Peer from 'skyway-js'
+import { Snackbars } from '@/snackbars'
 
 export interface Payload {
   peer: Peer
@@ -9,7 +10,6 @@ export interface Payload {
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useRoom = (payload: Payload) => {
-  const myMediaStream = ref<MediaStream | null>(null)
   const mediaStreams = ref<MediaStream[]>([])
 
   const peer = payload.peer
@@ -21,17 +21,26 @@ export const useRoom = (payload: Payload) => {
     console.log('room > open')
   })
   room.on('peerJoin', (peerId: string) => {
-    console.log(`room >> peerJoin ${peerId}`)
+    Snackbars.show(`'${peerId}'が参加しました`)
   })
   room.on('peerLeave', (peerId: string) => {
-    console.log(`room >> peerLeave ${peerId}`)
+    // https://webrtc.ecl.ntt.com/api-reference/javascript.html#events-4
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const index = mediaStreams.value.findIndex((v) => v.peerId === peerId)
+    if (index !== -1) {
+      mediaStreams.value.splice(index, 1)
+    }
+    Snackbars.show(`'${peerId}'が退出しました`)
   })
   room.on('log', (logs: string[]) => {
     console.log(`room >> log`)
     console.log(`    logs ${JSON.stringify(logs, null, '')}`)
   })
   room.on('stream', (stream: MediaStream) => {
-    console.log(`room >> stream`)
+    // https://webrtc.ecl.ntt.com/api-reference/javascript.html#events-4
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     mediaStreams.value.push(stream)
   })
   room.on('data', ({ src, data }) => {
@@ -43,14 +52,9 @@ export const useRoom = (payload: Payload) => {
     console.log('room > close')
   })
 
-  watch(
-    () => myMediaStream.value,
-    (value: MediaStream | null) => {
-      if (value !== null) {
-        room.replaceStream(value)
-      }
-    },
-  )
+  const changeMediaStream = (mediaStream: MediaStream) => {
+    room.replaceStream(mediaStream)
+  }
 
   const executeClose = (): void => {
     room.close()
@@ -62,8 +66,8 @@ export const useRoom = (payload: Payload) => {
   })
 
   return {
-    myMediaStream,
     mediaStreams,
     executeClose,
+    changeMediaStream,
   }
 }

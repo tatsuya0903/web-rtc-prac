@@ -36,7 +36,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, watch } from '@vue/composition-api'
 import Peer from 'skyway-js'
 import LayoutPage from '@/components/LayoutPage.vue'
 import { useRoom } from '@/composables/useRoom'
@@ -63,11 +63,21 @@ export default defineComponent({
   },
   setup(props: Props) {
     const { mediaStream } = useCamera()
-    const { mediaStreams, executeClose } = useRoom({
+    const { mediaStreams, executeClose, changeMediaStream } = useRoom({
       peer: props.peer,
       roomName: props.roomName,
       stream: mediaStream.value,
     })
+
+    watch(
+      () => mediaStream.value,
+      (value: MediaStream | null) => {
+        if (value !== null) {
+          changeMediaStream(value)
+        }
+      },
+      { deep: true },
+    )
 
     const clickQr = async () => {
       const shareUrl = Common.createRoomUrl(props.apiKey, props.roomName)
