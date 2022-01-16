@@ -99,6 +99,12 @@ export default defineComponent({
         LocalStorage.yourPeerId = value.length > 0 ? value : null
       },
     )
+    watch(
+      () => state.roomName,
+      (value: string) => {
+        LocalStorage.roomName = value.length > 0 ? value : null
+      },
+    )
 
     const click1on1 = async () => {
       if (state.theirPeerId.length === 0) {
