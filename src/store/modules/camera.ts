@@ -1,5 +1,6 @@
 import { ActionTree, GetterTree, Module, MutationTree } from 'vuex'
 import { RootState } from '@/store'
+import { Dialogs } from '@/dialogs'
 
 export interface State {
   mediaStream: MediaStream | null
@@ -58,15 +59,18 @@ const actions: ActionTree<State, RootState> = {
     const nextIndex = index + 1 <= indexMax ? index + 1 : indexMin
     const nextDeviceId = deviceIds[nextIndex]
 
-    const mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        deviceId: nextDeviceId ?? undefined,
-      },
-      audio: true,
-    })
-
-    commit('mediaStream', mediaStream)
-    commit('deviceId', nextDeviceId)
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          deviceId: nextDeviceId ?? undefined,
+        },
+        audio: true,
+      })
+      commit('mediaStream', mediaStream)
+      commit('deviceId', nextDeviceId)
+    } catch (e) {
+      await Dialogs.showError(e.message)
+    }
   },
 }
 
