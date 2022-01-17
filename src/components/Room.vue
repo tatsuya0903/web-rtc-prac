@@ -19,7 +19,7 @@
             <VideoPreview :media-stream="mediaStream" />
           </div>
         </div>
-        <div class="room__item room__item--chat">
+        <div v-show="drawer" class="room__item room__item--chat">
           <RoomChat :messages="messages" @send="clickSend" />
         </div>
       </div>
@@ -29,10 +29,13 @@
         <div style="display: flex; justify-content: center; align-items: center; padding: 8px">
           <span>{{ roomName }}</span>
         </div>
-        <v-spacer />
-        <CameraChangeButton />
         <v-btn icon @click="clickQr">
           <v-icon>mdi-qrcode</v-icon>
+        </v-btn>
+        <v-spacer />
+        <CameraChangeButton />
+        <v-btn icon :color="drawer ? 'primary' : null" @click="clickChat">
+          <v-icon>{{ drawer ? 'mdi-message' : 'mdi-message-text' }}</v-icon>
         </v-btn>
         <v-btn rounded color="error" @click="clickClose">
           <v-icon>mdi-phone-hangup</v-icon>
@@ -43,7 +46,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, watch } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
 import Peer from 'skyway-js'
 import LayoutPage from '@/components/LayoutPage.vue'
 import { useRoom } from '@/composables/useRoom'
@@ -57,6 +60,9 @@ import { useCamera } from '@/composables/useCamera'
 import CameraChangeButton from '@/components/CameraChangeButton.vue'
 import RoomChat from '@/components/RoomChat.vue'
 
+type State = {
+  drawer: boolean
+}
 type Props = {
   apiKey: string
   peer: Peer
@@ -83,6 +89,9 @@ export default defineComponent({
       roomName: props.roomName,
       stream: mediaStream.value,
     })
+    const state = reactive<State>({
+      drawer: false,
+    })
 
     watch(
       () => mediaStream.value,
@@ -106,13 +115,19 @@ export default defineComponent({
     const clickSend = async (message: string) => {
       executeSend(message)
     }
+
+    const clickChat = async () => {
+      state.drawer = !state.drawer
+    }
     return {
+      ...toRefs(state),
       mediaStreams,
       executeClose,
       clickQr,
       mediaStream,
       clickClose,
       clickSend,
+      clickChat,
       messages,
     }
   },
@@ -137,6 +152,11 @@ export default defineComponent({
       background: black;
       width: 380px;
       padding: 8px;
+    }
+    &.room__item--actions {
+      position: absolute;
+      right: 8px;
+      top: 8px;
     }
   }
 }

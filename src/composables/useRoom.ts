@@ -50,6 +50,7 @@ export const useRoom = (payload: Payload) => {
     mediaStreams.value.push(stream)
   })
   room.on('data', ({ src, data }) => {
+    console.log(`data > src: ${src}`)
     const message: Message = JSON.parse(data)
     messages.value.push(message)
   })

@@ -9,8 +9,8 @@
           <template v-for="(message, index) in messages">
             <v-list-item :key="index">
               <v-list-item-content>
-                <v-list-item-title>{{ message.text }}</v-list-item-title>
                 <v-list-item-subtitle>{{ message.peerId }}</v-list-item-subtitle>
+                <v-list-item-title>{{ message.text }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </template>
@@ -39,6 +39,7 @@ import { Message } from '@/composables/useRoom'
 type State = {
   message: string
 }
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Props = {
   messages: Message[]
 }
