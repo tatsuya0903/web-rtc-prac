@@ -8,9 +8,15 @@ export interface Payload {
   stream: MediaStream | null
 }
 
+export interface Message {
+  peerId: string
+  text: string
+}
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const useRoom = (payload: Payload) => {
   const mediaStreams = ref<MediaStream[]>([])
+  const messages = ref<Message[]>([])
 
   const peer = payload.peer
   const room = peer.joinRoom(payload.roomName, {
@@ -44,9 +50,8 @@ export const useRoom = (payload: Payload) => {
     mediaStreams.value.push(stream)
   })
   room.on('data', ({ src, data }) => {
-    console.log(`room >> data`)
-    console.log(`    src: ${src}`)
-    console.log(`    data: ${data}`)
+    const message: Message = JSON.parse(data)
+    messages.value.push(message)
   })
   room.on('close', () => {
     console.log('room > close')
@@ -59,6 +64,15 @@ export const useRoom = (payload: Payload) => {
   const executeClose = (): void => {
     room.close()
   }
+  const executeSend = (text: string) => {
+    const message: Message = {
+      peerId: payload.peer.id,
+      text: text,
+    }
+    messages.value.push(message)
+    const json = JSON.stringify(message)
+    room.send(json)
+  }
 
   onBeforeUnmount(() => {
     room.close()
@@ -69,5 +83,7 @@ export const useRoom = (payload: Payload) => {
     mediaStreams,
     executeClose,
     changeMediaStream,
+    executeSend,
+    messages,
   }
 }
