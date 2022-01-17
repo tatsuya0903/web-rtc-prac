@@ -25,7 +25,6 @@ import LayoutPage from '@/components/LayoutPage.vue'
 import { LocalStorage } from '@/localStorage'
 import InputText from '@/components/InputText.vue'
 import { RouterHelper } from '@/router-helper/RouterHelper'
-import { Env } from '@/env'
 import AppBar from '@/components/AppBar.vue'
 
 type State = {

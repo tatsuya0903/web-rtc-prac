@@ -5,9 +5,8 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, reactive, toRefs } from '@vue/composition-api'
+import { computed, defineComponent } from '@vue/composition-api'
 import { useCamera } from '@/composables/useCamera'
-type State = {}
 export default defineComponent({
   components: {},
   setup() {

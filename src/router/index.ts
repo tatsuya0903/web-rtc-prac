@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter, { Route, RouteConfig } from 'vue-router'
-import { RouteLocations, RouteNames } from '@/router/models'
+import { RouteNames } from '@/router/models'
 import { LocalStorage } from '@/localStorage'
 import ViewHome from '../views/ViewHome.vue'
 import ViewRoom from '@/views/ViewRoom.vue'

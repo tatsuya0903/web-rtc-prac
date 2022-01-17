@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onBeforeMount, reactive, toRefs, watch } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
 import { RouterHelper } from '@/router-helper/RouterHelper'
 import { Common } from '@/common'
 import LayoutPage from '@/components/LayoutPage.vue'

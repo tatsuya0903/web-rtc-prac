@@ -8,15 +8,15 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, reactive, toRefs } from '@vue/composition-api'
+import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import LayoutPage from '@/components/LayoutPage.vue'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
 import { usePeer } from '@/composables/usePeer'
 import Room from '@/components/Room.vue'
-import { LocalStorage } from '@/localStorage'
 
 type State = {}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Props = {
   apiKey: string
   roomName: string
@@ -27,7 +27,7 @@ export default defineComponent({
     apiKey: { type: String, required: true },
     roomName: { type: String, required: true },
   },
-  setup(props: Props) {
+  setup() {
     const state = reactive<State>({})
 
     const { peer } = usePeer()

@@ -1,7 +1,7 @@
 import store from '@/store'
 import { computed } from '@vue/composition-api'
 import Peer, { MediaConnection, PeerError } from 'skyway-js'
-import { PayloadCall, PayloadChangeCamera, PayloadInit, State } from '@/store/modules/peer'
+import { PayloadCall, PayloadInit } from '@/store/modules/peer'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export const usePeer = () => {
