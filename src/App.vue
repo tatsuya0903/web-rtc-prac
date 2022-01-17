@@ -1,31 +1,48 @@
 <template>
   <v-app>
-    <v-app-bar app color="primary" dark>
-      <v-app-bar-title>タイトル</v-app-bar-title>
-      <v-spacer />
-      <a style="color: white; opacity: 0.2" :href="commitUrl" target="_blank">{{ commitHash7 }}</a>
-    </v-app-bar>
-    <v-main>
-      <router-view />
-    </v-main>
+    <router-view :peer="peer" />
   </v-app>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, toRefs } from '@vue/composition-api'
-import { Env } from '@/env'
+import {
+  defineComponent,
+  onBeforeMount,
+  reactive,
+  SetupContext,
+  toRefs,
+} from '@vue/composition-api'
+import { usePeer } from '@/composables/usePeer'
+import { useCamera } from '@/composables/useCamera'
+import { LocalStorage } from '@/localStorage'
 
 type State = {}
 export default defineComponent({
   components: {},
-  setup() {
+  setup(_: unknown, context: SetupContext) {
+    const { init: cameraInit, mediaStream } = useCamera()
+    const { init: peerInit, peer } = usePeer()
     const state = reactive<State>({})
-    const commitHash7 = Env.commitHash?.substring(0, 7) ?? ''
-    const commitUrl = Env.commitUrl
+
+    onBeforeMount(() => {
+      init()
+    })
+
+    const init = async () => {
+      await cameraInit()
+      const apiKey = context.root.$route.params.apiKey ?? null
+      if (apiKey !== null) {
+        await peerInit({
+          apiKey: apiKey,
+          peerId: LocalStorage.myPeerId,
+          mediaStream: mediaStream.value,
+        })
+      }
+    }
+
     return {
       ...toRefs(state),
-      commitHash7,
-      commitUrl,
+      peer,
     }
   },
 })

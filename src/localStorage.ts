@@ -13,7 +13,6 @@ export class LocalStorage {
     const data: ISettings | null = this.load<ISettings>(Keys.Settings)
     return data === null ? Settings.createDefault() : Settings.create(data)
   }
-
   static get apiKey(): string | null {
     return this.settings.apiKey
   }
@@ -22,6 +21,7 @@ export class LocalStorage {
     settings.apiKey = value
     this.settings = settings
   }
+
   static get myPeerId(): string | null {
     return this.settings.myPeerId
   }
@@ -30,12 +30,20 @@ export class LocalStorage {
     settings.myPeerId = value
     this.settings = settings
   }
-  static get theirPeerId(): string | null {
-    return this.settings.theirPeerId
+  static get yourPeerId(): string | null {
+    return this.settings.yourPeerId
   }
-  static set theirPeerId(value: string | null) {
+  static set yourPeerId(value: string | null) {
     const settings = this.settings
-    settings.theirPeerId = value
+    settings.yourPeerId = value
+    this.settings = settings
+  }
+  static get roomName(): string | null {
+    return this.settings.roomName
+  }
+  static set roomName(value: string | null) {
+    const settings = this.settings
+    settings.roomName = value
     this.settings = settings
   }
 

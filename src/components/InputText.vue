@@ -1,5 +1,12 @@
 <template>
-  <v-text-field v-model="localValue" :readonly="readonly" outlined dense :label="label" />
+  <v-text-field
+    v-model="localValue"
+    :readonly="readonly"
+    outlined
+    dense
+    :label="label"
+    hide-details
+  />
 </template>
 
 <script lang="ts">

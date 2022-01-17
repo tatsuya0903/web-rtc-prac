@@ -58,6 +58,8 @@ export default defineComponent({
           }
         }),
       )
+
+      localValue.value = devices[0].deviceId
     }
 
     return {
