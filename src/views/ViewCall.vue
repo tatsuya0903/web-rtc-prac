@@ -40,7 +40,7 @@ import { MediaConnection } from 'skyway-js'
 import { RouterHelper } from '@/router-helper/RouterHelper'
 import InputText from '@/components/InputText.vue'
 import MessageForm from '@/components/MessageForm.vue'
-import { useCamera } from '@/composables/useCamera'
+import { useStoreCamera } from '@/composables/useStoreCamera'
 import CameraChangeButton from '@/components/CameraChangeButton.vue'
 
 type State = {}
@@ -62,7 +62,7 @@ export default defineComponent({
     theirPeerId: { type: String, required: true },
   },
   setup(props: Props) {
-    const { mediaStream } = useCamera()
+    const { mediaStream } = useStoreCamera()
     const { close, yourMediaStream, mediaConnection } = usePeer()
 
     const state = reactive<State>({})

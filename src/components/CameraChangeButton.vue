@@ -6,11 +6,11 @@
 
 <script lang="ts">
 import { computed, defineComponent } from '@vue/composition-api'
-import { useCamera } from '@/composables/useCamera'
+import { useStoreCamera } from '@/composables/useStoreCamera'
 export default defineComponent({
   components: {},
   setup() {
-    const { devices, change } = useCamera()
+    const { devices, change } = useStoreCamera()
 
     const disabled = computed(() => (devices.value ?? []).length < 2)
 

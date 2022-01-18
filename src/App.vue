@@ -13,14 +13,14 @@ import {
   toRefs,
 } from '@vue/composition-api'
 import { usePeer } from '@/composables/usePeer'
-import { useCamera } from '@/composables/useCamera'
+import { useStoreCamera } from '@/composables/useStoreCamera'
 import { LocalStorage } from '@/localStorage'
 
 type State = {}
 export default defineComponent({
   components: {},
   setup(_: unknown, context: SetupContext) {
-    const { init: cameraInit, mediaStream } = useCamera()
+    const { init: cameraInit, mediaStream } = useStoreCamera()
     const { init: peerInit, peer } = usePeer()
     const state = reactive<State>({})
 

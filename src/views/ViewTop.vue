@@ -71,7 +71,7 @@ import Peer from 'skyway-js'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
 import AppBar from '@/components/AppBar.vue'
-import { useCamera } from '@/composables/useCamera'
+import { useStoreCamera } from '@/composables/useStoreCamera'
 import CameraChangeButton from '@/components/CameraChangeButton.vue'
 import SampleList from '@/components/SampleList.vue'
 
@@ -97,7 +97,7 @@ export default defineComponent({
   },
   setup(props: Props) {
     const { call, peer, peerId, yourPeerId } = usePeer()
-    const { mediaStream } = useCamera()
+    const { mediaStream } = useStoreCamera()
 
     const state = reactive<State>({
       theirPeerId: LocalStorage.yourPeerId ?? '',

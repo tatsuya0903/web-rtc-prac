@@ -56,7 +56,7 @@ import VideoPreview from '@/components/VideoPreview.vue'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreviews from '@/components/VideoPreviews.vue'
 import { RouterHelper } from '@/router-helper/RouterHelper'
-import { useCamera } from '@/composables/useCamera'
+import { useStoreCamera } from '@/composables/useStoreCamera'
 import CameraChangeButton from '@/components/CameraChangeButton.vue'
 import RoomChat from '@/components/RoomChat.vue'
 
@@ -83,7 +83,7 @@ export default defineComponent({
     roomName: { type: String, required: true },
   },
   setup(props: Props) {
-    const { mediaStream } = useCamera()
+    const { mediaStream } = useStoreCamera()
     const { mediaStreams, executeClose, changeMediaStream, executeSend, messages } = useRoom({
       peer: props.peer,
       roomName: props.roomName,
