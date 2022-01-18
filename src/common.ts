@@ -8,6 +8,9 @@ export class Common {
   static createRoomUrl(apiKey: string, roomName: string): string {
     return `https://tatsuya0903.github.io/web-rtc-prac/${apiKey}/rooms/${roomName}`
   }
+  static createSample2Url(apiKey: string, toPeerId: string): string {
+    return `https://tatsuya0903.github.io/web-rtc-prac/${apiKey}/sample2?toPeerId=${toPeerId}`
+  }
 
   static createRoomName(): string {
     const createCode = (len: number): string => {

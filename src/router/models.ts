@@ -62,11 +62,14 @@ export class RouteLocations {
       },
     }
   }
-  static toSample2(apiKey: string): Location {
+  static toSample2(apiKey: string, toPeerId: string | null = null): Location {
     return {
       name: RouteNames.Sample2,
       params: {
         apiKey: apiKey,
+      },
+      query: {
+        toPeerId: toPeerId,
       },
     }
   }

@@ -69,6 +69,7 @@ const routes: Array<RouteConfig> = [
     component: ViewSample2,
     props: (route: Route) => ({
       apiKey: route.params.apiKey,
+      toPeerId: route.query.toPeerId,
     }),
   },
   {

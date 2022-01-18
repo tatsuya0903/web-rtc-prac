@@ -51,5 +51,7 @@ export default defineComponent({
 <style lang="scss" scoped>
 .input-text {
   padding-top: 8px;
+  padding-bottom: 8px;
+  width: 100%;
 }
 </style>
