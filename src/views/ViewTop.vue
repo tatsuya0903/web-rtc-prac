@@ -38,6 +38,9 @@
               </v-card-actions>
             </v-card>
           </v-col>
+          <v-col cols="12" md="4">
+            <SampleList :api-key="apiKey" />
+          </v-col>
         </v-row>
       </v-container>
     </template>
@@ -70,6 +73,7 @@ import VideoPreview from '@/components/VideoPreview.vue'
 import AppBar from '@/components/AppBar.vue'
 import { useCamera } from '@/composables/useCamera'
 import CameraChangeButton from '@/components/CameraChangeButton.vue'
+import SampleList from '@/components/SampleList.vue'
 
 type State = {
   theirPeerId: string
@@ -79,7 +83,15 @@ type Props = {
   apiKey: string
 }
 export default defineComponent({
-  components: { CameraChangeButton, AppBar, VideoPreview, CameraSelect, InputText, LayoutPage },
+  components: {
+    SampleList,
+    CameraChangeButton,
+    AppBar,
+    VideoPreview,
+    CameraSelect,
+    InputText,
+    LayoutPage,
+  },
   props: {
     apiKey: { type: String, required: true },
   },

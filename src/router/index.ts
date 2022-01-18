@@ -7,6 +7,11 @@ import ViewRoom from '@/views/ViewRoom.vue'
 import { Common } from '@/common'
 import ViewTop from '@/views/ViewTop.vue'
 import ViewCall from '@/views/ViewCall.vue'
+import ViewSample1 from '@/views/ViewSample1.vue'
+import ViewSample5 from '@/views/ViewSample5.vue'
+import ViewSample4 from '@/views/ViewSample4.vue'
+import ViewSample3 from '@/views/ViewSample3.vue'
+import ViewSample2 from '@/views/ViewSample2.vue'
 
 Vue.use(VueRouter)
 
@@ -48,6 +53,46 @@ const routes: Array<RouteConfig> = [
     props: (route: Route) => ({
       apiKey: route.params.apiKey,
       roomName: route.params.roomName ?? Common.createRoomName(),
+    }),
+  },
+  {
+    path: '/:apiKey/sample1',
+    name: RouteNames.Sample1,
+    component: ViewSample1,
+    props: (route: Route) => ({
+      apiKey: route.params.apiKey,
+    }),
+  },
+  {
+    path: '/:apiKey/sample2',
+    name: RouteNames.Sample2,
+    component: ViewSample2,
+    props: (route: Route) => ({
+      apiKey: route.params.apiKey,
+    }),
+  },
+  {
+    path: '/:apiKey/sample3',
+    name: RouteNames.Sample3,
+    component: ViewSample3,
+    props: (route: Route) => ({
+      apiKey: route.params.apiKey,
+    }),
+  },
+  {
+    path: '/:apiKey/sample4',
+    name: RouteNames.Sample4,
+    component: ViewSample4,
+    props: (route: Route) => ({
+      apiKey: route.params.apiKey,
+    }),
+  },
+  {
+    path: '/:apiKey/sample5',
+    name: RouteNames.Sample5,
+    component: ViewSample5,
+    props: (route: Route) => ({
+      apiKey: route.params.apiKey,
     }),
   },
   {
