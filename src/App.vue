@@ -12,7 +12,7 @@ import {
   SetupContext,
   toRefs,
 } from '@vue/composition-api'
-import { usePeer } from '@/composables/usePeer'
+import { useStorePeer } from '@/composables/useStorePeer'
 import { useStoreCamera } from '@/composables/useStoreCamera'
 import { LocalStorage } from '@/localStorage'
 
@@ -21,7 +21,7 @@ export default defineComponent({
   components: {},
   setup(_: unknown, context: SetupContext) {
     const { init: cameraInit, mediaStream } = useStoreCamera()
-    const { init: peerInit, peer } = usePeer()
+    const { init: peerInit, peer } = useStorePeer()
     const state = reactive<State>({})
 
     onBeforeMount(() => {

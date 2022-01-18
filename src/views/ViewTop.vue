@@ -65,7 +65,7 @@ import { Common } from '@/common'
 import LayoutPage from '@/components/LayoutPage.vue'
 import InputText from '@/components/InputText.vue'
 import { Dialogs } from '@/dialogs'
-import { usePeer } from '@/composables/usePeer'
+import { useStorePeer } from '@/composables/useStorePeer'
 import { LocalStorage } from '@/localStorage'
 import Peer from 'skyway-js'
 import CameraSelect from '@/components/CameraSelect.vue'
@@ -96,7 +96,7 @@ export default defineComponent({
     apiKey: { type: String, required: true },
   },
   setup(props: Props) {
-    const { call, peer, peerId, yourPeerId } = usePeer()
+    const { call, peer, peerId, yourPeerId } = useStorePeer()
     const { mediaStream } = useStoreCamera()
 
     const state = reactive<State>({

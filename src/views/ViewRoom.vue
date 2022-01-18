@@ -12,7 +12,7 @@ import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import LayoutPage from '@/components/LayoutPage.vue'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
-import { usePeer } from '@/composables/usePeer'
+import { useStorePeer } from '@/composables/useStorePeer'
 import Room from '@/components/Room.vue'
 
 type State = {}
@@ -30,7 +30,7 @@ export default defineComponent({
   setup() {
     const state = reactive<State>({})
 
-    const { peer } = usePeer()
+    const { peer } = useStorePeer()
 
     return {
       ...toRefs(state),

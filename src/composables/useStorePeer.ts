@@ -4,7 +4,7 @@ import Peer, { MediaConnection, PeerError } from 'skyway-js'
 import { PayloadCall, PayloadInit } from '@/store/modules/peer'
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export const usePeer = () => {
+export const useStorePeer = () => {
   const peer = computed<Peer | null>(() => store.getters['peer/data'])
   const peerId = computed<string | null>(() => peer.value?.id ?? null)
   const yourMediaStream = computed<MediaStream | null>(() => store.getters['peer/yourMediaStream'])

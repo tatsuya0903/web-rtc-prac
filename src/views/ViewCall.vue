@@ -35,7 +35,7 @@ import { defineComponent, reactive, toRefs, watch } from '@vue/composition-api'
 import LayoutPage from '@/components/LayoutPage.vue'
 import CameraSelect from '@/components/CameraSelect.vue'
 import VideoPreview from '@/components/VideoPreview.vue'
-import { usePeer } from '@/composables/usePeer'
+import { useStorePeer } from '@/composables/useStorePeer'
 import { MediaConnection } from 'skyway-js'
 import { RouterHelper } from '@/router-helper/RouterHelper'
 import InputText from '@/components/InputText.vue'
@@ -63,7 +63,7 @@ export default defineComponent({
   },
   setup(props: Props) {
     const { mediaStream } = useStoreCamera()
-    const { close, yourMediaStream, mediaConnection } = usePeer()
+    const { close, yourMediaStream, mediaConnection } = useStorePeer()
 
     const state = reactive<State>({})
     watch(

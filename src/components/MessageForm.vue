@@ -12,7 +12,7 @@
 <script lang="ts">
 import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import InputText from '@/components/InputText.vue'
-import { usePeer } from '@/composables/usePeer'
+import { useStorePeer } from '@/composables/useStorePeer'
 import { Snackbars } from '@/snackbars'
 import { Dialogs } from '@/dialogs'
 
@@ -22,7 +22,7 @@ type State = {
 export default defineComponent({
   components: { InputText },
   setup() {
-    const { send } = usePeer()
+    const { send } = useStorePeer()
 
     const state = reactive<State>({
       message: '',
