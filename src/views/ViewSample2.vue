@@ -7,8 +7,7 @@
             <InputText label="APIキー" :value="apiKey" />
             <InputText v-model="peerId" label="PeerId" />
             <div>{{ message }}</div>
-            <QrButton :data="url" />
-            <a :href="url">{{ url }}</a>
+            <QrButton v-if="url !== null" :data="url" />
 
             <v-divider />
             <InputText v-model="localToPeerId" label="送信先PeerId" />
@@ -72,7 +71,10 @@ export default defineComponent({
       return peer.value.open ? '接続完了' : '接続中...'
     })
 
-    const url = computed(() => {
+    const url = computed<string | null>(() => {
+      if (peerId.value === null) {
+        return null
+      }
       return Common.createSample2Url(props.apiKey, peerId.value)
     })
 
