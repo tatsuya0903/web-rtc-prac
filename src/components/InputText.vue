@@ -1,18 +1,20 @@
 <template>
-  <v-text-field
-    v-model="localValue"
-    :readonly="readonly"
-    outlined
-    dense
-    :label="label"
-    hide-details
-  />
+  <div class="input-text">
+    <v-text-field
+      v-model="localValue"
+      :readonly="readonly"
+      outlined
+      dense
+      :label="label"
+      hide-details
+    />
+  </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, SetupContext, reactive, toRefs, computed } from '@vue/composition-api'
 
-type Value = string
+type Value = string | null
 type State = {}
 type Props = {
   value: string
@@ -22,7 +24,7 @@ type Props = {
 export default defineComponent({
   components: {},
   props: {
-    value: { type: String, required: true },
+    value: { type: String, default: null },
     label: { type: String, default: null },
     readonly: { type: Boolean, default: false },
   },
@@ -46,4 +48,8 @@ export default defineComponent({
 })
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.input-text {
+  padding-top: 8px;
+}
+</style>

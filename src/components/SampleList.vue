@@ -24,7 +24,6 @@ type Item = {
   subtitle: string
   to: Location
 }
-type State = {}
 type Props = {
   apiKey: string
 }
