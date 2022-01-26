@@ -23,7 +23,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, onBeforeMount, reactive, toRefs } from '@vue/composition-api'
+import { computed, defineComponent, reactive, toRefs } from '@vue/composition-api'
 import LayoutPage from '@/components/LayoutPage.vue'
 import InputText from '@/components/InputText.vue'
 import { usePeer } from '@/composables/usePeer'

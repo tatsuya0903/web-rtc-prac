@@ -15,6 +15,7 @@ import { defineComponent, reactive, toRefs } from '@vue/composition-api'
 import LayoutPage from '@/components/LayoutPage.vue'
 
 type State = {}
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Props = {
   apiKey: string
 }
@@ -23,7 +24,7 @@ export default defineComponent({
   props: {
     apiKey: { type: String, required: true },
   },
-  setup(props: Props) {
+  setup() {
     const state = reactive<State>({})
     return {
       ...toRefs(state),
